@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:43:15 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/27 13:26:10 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/27 17:04:50 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,14 @@ class Channel{
     
         bool topicLock; // true if only chanop can change the channel's topic
         bool modeLock; // true if only chanop can change the channel's mode
+        
+        Server &server;
     
         //containers
         std::map<std::string, Client &> regularUsers; //the list of non-operator users in the channel
         std::map<std::string, Client &> operators; // the list of clients who have operator status in the channel
     public:
-        Channel(Client const& creator, std::string chname, Server server);
+        Channel(Client const& creator, std::string chname, Server _server);
         ~Channel();
         
         //setters

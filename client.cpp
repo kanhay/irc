@@ -6,45 +6,49 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 13:41:41 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/27 14:45:28 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/28 22:42:52 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
+#include <cctype> //tolower fun
 
-void isValidNickName(std::string nickname){
+void    tolowercase(std::string &str){
+    for (unsigned int i = 0; i < str.size(); i++)
+        str[i] = std::tolower(str[i]);
+}
+bool isValidNickName(std::string nickname){
     if (!nickname.empty()){
+        if (nickname.size() > 9)
+            return false;//Nicknames can have a maximum length of 9 characters.
         for (unsigned int i = 0; i < nickname.size(); i++){
-            if (!isdigit(nickname[i] && nickname)
+            if (!isdigit(nickname[i]) && nickname[i] != '-' && nickname[i] != '_' && nickname[i] != '\\'
+            && !(nickname[i] >= 'a' && nickname[i] <= 'z')) //no need to check uppercase alphabets since nichname is already converted to lowercase in this step
+                return false; //consist of letters (a-z, A-Z), numbers (0-9), and certain special characters, such as underscore (_), hyphen (-), and backslash ().
         }
+        if (isdigit(nickname[0])) //The first character of a nickname must be a letter or a special character
+            return false;
+        if (nickname == "nickserv" || nickname == "chanserv") //are often reserved or restricted by the IRC server for other server services.
+            return false ;
     }
     else
-        std::cerr << "error: empty nickname\n";exit(1);
+        return(0);//empty nickname
 }
 
-void isValidUserName(std::string username){
-    if (!username.empty()){
-        
-    }
-    else
-        std::cerr << "error: empty username\n";
-}
-Client::Client(Server server, std::string nn, std::string un, std::string hn, std::string rn, int sd)
-:hostname(hn), realname(rn), servername("ft_irc"),
-registred(1), socket(sd){
-    isValidNickName(nn);
-    isValidUserName(un);
-    if (!server.isInUseNickname(nickname))
-        nickname = nn;
-    else
+void    nickCommand(std::string &nn, Server &server, Client &client){
+    tolowercase(nn); //Nicknames are generally case-insensitive
+    if (!isValidNickName(nn))
+        std::cout << "error: nickname wenti\n"; exit (1);
+    if (server.isInUseNickname(nn))
         std::cerr << "error: nickname already in use\n"; exit(1);
-    if (!server.isInUseUsername(username))
-        username = un;
-    else
-        std::cerr << "error: username already in use\n"; exit(1);
-    server.addClient(*this); //add the new client to the server container if successfully created
+    server.addUser(client); //add the new client to the server container if successfully created   
 }
-Client::~Client(){}
+
+Client::Client(){}
+Client::~Client(){
+    //colse client's sochet
+    server.removeUser(*this);
+}
 
 //getters
 std::string Client::getNickname() const{
@@ -68,8 +72,20 @@ bool Client::isRegistred() const{
 
 
 //setters
-void Client::setNickname(std::string newNickname){
-    nickname = newNickname;
+void Client::setNickname(std::string nn){
+    nickname = nn;
+}
+void Client::setUsername(std::string un){
+    username = un;
+}
+void Client::sethostname(std::string hn){
+    hostname = hn;
+}
+void Client::setservername(std::string sn){
+    servername = sn;
+}
+void Client::setrealname(std::string rn){
+    realname = rn;
 }
 void Client::setSocketDescriptor(int sd){
     socket = sd;
@@ -81,3 +97,10 @@ void Client::setRegistered(bool b){
 
 //others
 void Client::joinchannel(Channel &channel);
+
+void Client::user(std::string un, std::string hn, std::string sn, std::string rn){
+    setUsername(un);
+    sethostname(hn);
+    setservername(sn);
+    setrealname(rn);
+}

@@ -6,19 +6,22 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 16:19:20 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/27 14:06:16 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/27 17:07:39 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "channel.hpp"
 
-Channel::Channel(Client const& creator, std::string chname, Server server):name(chname), limit(30), topicLock(false), modeLock(false){
+Channel::Channel(Client const& creator, std::string chname, Server _server):name(chname), 
+limit(30), topicLock(false), modeLock(false), server(_server){
     if (server.isInUseChName(chname))
         std::cerr << "error: there is an other channel with the same name\n";
     server.addChannel(*this); //add the new Channel in the server's channel list
     operators[creator.getNickname()] = creator; //the channel creator is considered an operator by default
 }
-Channel::~Channel(){}
+Channel::~Channel(){
+    server.removeChannel(*this);
+}
 
 //setters
 void Channel::setMode(std::string newMode){
