@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 13:41:41 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 19:59:34 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 21:28:06 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,11 @@ bool    Client::isPasswordSended(){
 
 //others
 
-void Client::registerClient(Server &s){
+void Client::registerClient(){
     if (PasswordSended && !nickname.empty() && !username.empty()
     && !hostname.empty() && !servername.empty() && !realname.empty()){
         registered = true;
-        s.addUser(*this);
+        server.addUser(*this);
     }
 }
 

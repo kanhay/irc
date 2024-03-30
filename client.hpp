@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 13:41:32 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 19:52:15 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 21:29:52 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,13 @@ class Client{
         bool    isPasswordSended(); //return passwordsended
     
         //other
-        void registerClient(Server &s); //register the client into the server if all the attributes related to the client's autentication are set
-
+        void registerClient(); //register the client into the server if all the attributes related to the client's autentication are set
 };
 
 //authentication utils
 void    tolowercase(std::string &str);
 bool    isValidNickName(std::string nickname);
-void    nickCommand(std::string &args, Server &s, Client &c);
+void    nickCommand(std::string &args, Client &c);
 void    userCommand(std::string &args, Client &c);
 void    passCommand(std::string &args, Client &c);
 

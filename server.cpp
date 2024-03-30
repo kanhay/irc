@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:26:14 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 20:33:49 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 21:37:38 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,14 +273,17 @@ void    Server::removeChannel(Channel const& channel){
 
 //other
 
+void	Server::sendMsg(int clientFd, std::string msg){
+	std::cerr << clientFd << ">> Error: " << msg <<"\n";
+}
+
 void	Server::handleCommands(std::string &cmd, std::string &args, Client &client){
 	tolowercase(cmd);
 	if (cmd == "user")
-	
+		userCommand(args, client);
 	else if (cmd == "nick")
-	
+		nickCommand(args, client);
 	else if (cmd == "pass")
-
-	else
-		//errior
+		passCommand(args, client);
 }
+
