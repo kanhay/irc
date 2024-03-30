@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:25:57 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/28 22:28:35 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 13:44:55 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,15 @@
 #include "channel.hpp"
 
 class Server{
+        std::string password;
         std::vector<Client> clients; //the currently connected clients in the server (the key in map is the client's nickname)
         std::vector<Channel> channels; //Available channels in the server
     public:
         Server();
         ~Server();//close users fds before quitting
-        void    errorMessage(std::string msg);
-
-        void    startServer();
-        void    stopServer();
-        void    handleConnections();
-        void    broadcastMessage(std::string &msg, std::string chname);
-        void    sendMessage(std::string &msg, std::string nickname); //to one specific user
-        void    processCommand(std::string &cmd);
-
+        void    setPassword(std::string pw);
+        std::string    getPassword();
+        
         //managing users
         bool    isInUseNickname(std::string nickname); //true if a nickname is already choosed by another client
     

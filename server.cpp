@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:26:14 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/28 21:22:10 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/29 22:08:31 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@ Server::~Server(){
     //close users fd before quitting 
     for (unsigned int i = 0; i < clients.size(); i++)
         close(clients[i].getSocketDescriptor());
+}
+
+void    Server::setPassword(std::string pw){
+    password = pw;
+}
+
+std::string    Server::getPassword(){
+    return password;
 }
 
 bool    Server::isInUseNickname(std::string nickname){
