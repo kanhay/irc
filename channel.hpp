@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   channel.hpp                                        :+:      :+:    :+:   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:43:15 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/27 17:04:50 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 19:51:48 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
 
-#include "client.hpp"
-#include "server.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
+
+class Client;
+class Server;
 
 class Channel{
     private:
@@ -27,18 +29,18 @@ class Channel{
         std::string mode; // the mode seted for the channel
         std::string key; //The key required to join the channel (If the mode is not invite-only)
     
-        int limit; //The maximum number of clients allowed in the channel
+        unsigned long limit; //The maximum number of clients allowed in the channel
     
         bool topicLock; // true if only chanop can change the channel's topic
         bool modeLock; // true if only chanop can change the channel's mode
-        
-        Server &server;
     
         //containers
-        std::map<std::string, Client &> regularUsers; //the list of non-operator users in the channel
-        std::map<std::string, Client &> operators; // the list of clients who have operator status in the channel
+        std::vector<Client> regularUsers; //the list of non-operator users in the channel
+        std::vector<Client> operators; // the list of clients who have operator status in the channel
+    
     public:
-        Channel(Client const& creator, std::string chname, Server _server);
+        static Server &server;
+        Channel(Client &creator, std::string chname);
         ~Channel();
         
         //setters
@@ -57,17 +59,16 @@ class Channel{
         bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
 
-        void addOperator(Client const& client); //Add a client as an operator of the channel
-        void removeOperator(Client const& client); //Remove a client from operators list
+        void addOperator(Client & c); //Add a client as an operator of the channel
+        void removeOperator(Client & c); //Remove a client from operators list
         
-        void addRegularUser(Client const& client);
-        void removeRegularUser(Client const& client);
+        void addRegularUser(Client & c);
+        void removeRegularUser(Client & c);
         
-        bool isOperator(Client const& client) const; //true if a given client is an operator in the channel
-        bool isRegularuser(Client const& client) const; //true if a given client is a member in the channel 
-        bool isMember(Client const& client); //the client is member if it is an operator or a regular user
+        bool isOperator(Client const& c) const; //true if a given client is an operator in the channel
+        bool isRegularuser(Client const& c) const; //true if a given client is a member in the channel 
+        bool isMember(Client const& c); //the client is member if it is an operator or a regular user
         bool isfull(); // true if operators.size() + regularUsers.size() == limit
-        
-        // void invite(std::string nichname);
+
 };
 #endif

@@ -1,24 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   channel.cpp                                        :+:      :+:    :+:   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 16:19:20 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/27 17:07:39 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/30 19:54:13 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "channel.hpp"
+#include "Channel.hpp"
 
-Channel::Channel(Client const& creator, std::string chname, Server _server):name(chname), 
-limit(30), topicLock(false), modeLock(false), server(_server){
-    if (server.isInUseChName(chname))
-        std::cerr << "error: there is an other channel with the same name\n";
-    server.addChannel(*this); //add the new Channel in the server's channel list
-    operators[creator.getNickname()] = creator; //the channel creator is considered an operator by default
+Channel::Channel(Client &creator, std::string chname):name(chname), limit(10), topicLock(false), modeLock(false){
+    operators.push_back(creator); //the channel creator is considered an operator by default
+    server.addChannel(*this); //add channel in the server container
 }
+
 Channel::~Channel(){
     server.removeChannel(*this);
 }
@@ -62,42 +60,51 @@ bool Channel::isModelocked() const{
 bool Channel::isTopiclocked() const{
     return topicLock;
 }
-void Channel::addOperator(Client const& client){
-    if (regularUsers.find(client.getNickname()) != regularUsers.end())
-        regularUsers.erase(regularUsers.find(client.getNickname())); //remove client from regular users if exist before adding it to operators
-
-    if (operators.find(client.getNickname()) == operators.end())
-        operators[client.getNickname()] = client;
+void Channel::addOperator(Client & c){
+    if (isRegularuser(c))
+        removeRegularUser(c);
+    operators.push_back(c); 
 }
-void Channel::removeOperator(Client const& client){
-    if (operators.find(client.getNickname()) != operators.end())
-        operators.erase(operators.find(client.getNickname()));
-}
-
-void Channel::addRegularUser(Client const& client){
-    if (operators.find(client.getNickname()) != operators.end())
-        operators.erase(operators.find(client.getNickname()));
-
-    if (regularUsers.find(client.getNickname()) == regularUsers.end())
-        regularUsers[client.getNickname()] = client;
-}
-void Channel::removeRegularUser(Client const& client){
-    if (regularUsers.find(client.getNickname()) != regularUsers.end())
-        regularUsers.erase(regularUsers.find(client.getNickname()));
+void Channel::removeOperator(Client & c){
+    for (unsigned int i = 0; i < operators.size(); i++){
+        if (operators[i].getNickname() == c.getNickname()){
+            operators.erase(operators.begin() + i);
+            break ;
+        }
+    }
 }
 
-bool Channel::isOperator(Client const& client) const{
-    if (operators.find(client.getNickname()) != operators.end())
+void Channel::addRegularUser(Client & c){
+    if (isOperator(c))
+        removeOperator(c);
+    regularUsers.push_back(c);
+}
+
+void Channel::removeRegularUser(Client & c){
+    for (unsigned int i = 0; i < regularUsers.size(); i++){
+        if (regularUsers[i].getNickname() == c.getNickname()){
+            regularUsers.erase(regularUsers.begin() + i);
+            break ;
+        }
+    }
+}
+
+bool Channel::isOperator(Client const& c) const{
+    for (unsigned int i = 0; i < operators.size(); i++){
+        if (operators[i].getNickname() == c.getNickname())
         return true;
+    }
     return false;
 }
-bool Channel::isRegularuser(Client const& client) const{
-    if (regularUsers.find(client.getNickname()) != regularUsers.end())
+bool Channel::isRegularuser(Client const& c) const{
+    for (unsigned int i = 0; i < regularUsers.size(); i++){
+        if (regularUsers[i].getNickname() == c.getNickname())
         return true;
+    }
     return false;
 }
-bool Channel::isMember(Client const& client){
-    if (operators.find(client.getNickname()) != operators.end() || regularUsers.find(client.getNickname()) != regularUsers.end())
+bool Channel::isMember(Client const& c){
+    if (isOperator(c) || isRegularuser(c))
         return true;
     return false;
 }
