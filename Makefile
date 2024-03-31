@@ -6,7 +6,7 @@
 #header
 #header
 
-NAME	= IR
+NAME	= ircserv
 
 SRCS	= main.cpp Server.cpp Client.cpp Channel.cpp authentication.cpp
 

@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:25:57 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 15:23:12 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 18:34:18 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Channel;
 
 class Server{
     private:
-		int							serverID;
+		int							serverFD;
 		int							port;
 		int							connectionID;
 		static bool					signal;
@@ -56,7 +56,8 @@ class Server{
 		void		setPassword(char *str);
         
         //getters
-        std::string    getPassword();
+		int				getPort();
+        std::string		getPassword();
         
         //building the server
 		void		create_socket();
@@ -65,24 +66,23 @@ class Server{
 		void		acceptClient();
 		void		recieve_data(int fd);
 		static void	sigHandler(int signum);
-		void		closeFD();
-		void		clearClient(int fd);
 
 		void		sendMsg(int clientFd, std::string msg); //needed to send error messages to a specific client
 		void		stopServer();
 
         //managing users
         bool    isInUseNickname(std::string nickname); //true if a nickname is already choosed by another client
-        void    addUser(Client const& client); //add the new client in the clients container (only once)
-        void    removeUser(Client const& client); //close fd when removing user
-		void	removeAllUsers(); //close all clients fd and clear clients
+        void    addClient(Client const& client); //add the new client in the clients container (only once)
+		void	clear1Client(int fd);
+        // void    removeClient(Client const& client); //close fd when removing user
+		void	clearClients(); //close all clients fd and clear clients
 
         //managing channels
         bool    isInUseChName(std::string chName); //true if there an other channel with the same name
         void    addChannel(Channel const& channel);
-        void    removeChannel(Channel const& channel);
+        void    clearChannel(Channel const& channel);
 		// other
-		void	handleCommands(std::string &cmd, std::string &args, Client &client);
+		// void	handleCommands(int fd);
 
 };
 

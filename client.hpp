@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 13:41:32 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 21:29:52 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 17:39:26 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Server;
 
 class Client{
     private:
-        int			clientID;
+        int			clientFD;//The socket descriptor for the client's connection
 		std::string	clientIP;
 		std::string	buffer;
 
@@ -35,7 +35,6 @@ class Client{
         std::string hostname; //the hostname of the client's machine
         std::string servername; //the IRC server to which the user is connecting
         std::string realname; //the real name of the client
-        int socket; //The socket descriptor for the client's connection
         bool registered; //Indicates whether the client succeeded to register to the server or not
         bool PasswordSended; //set to true the first time the correct password is given by the client
 
@@ -47,26 +46,23 @@ class Client{
         //setters
         void	setIP(std::string IPaddr);
 		void	setBuffer(std::string rec);
-		void	setClientID(int fd);
+		void	setClientFD(int fd);
         
         void    setNickname(std::string nn);
         void    setUsername(std::string un);
         void    setHostname(std::string hn);
         void    setServername(std::string sn);
         void    setRealname(std::string rn);
-        void    setSocketDescriptor(int sd);
         void    setRegistered(bool b);
         void    setPasswordSended(bool b);
     
         //getters
-        int		getClientID();
-
+        int         getClientFD();
         std::string getNickname() const;
         std::string getUsername() const;
         std::string getHostname() const;
         std::string getServername() const;
         std::string getRealname() const;
-        int getSocketDescriptor() const;
         bool isRegistered() const; //return registred
         bool    isPasswordSended(); //return passwordsended
     

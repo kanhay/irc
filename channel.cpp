@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 16:19:20 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 19:54:13 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 17:42:04 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ Channel::Channel(Client &creator, std::string chname):name(chname), limit(10), t
 }
 
 Channel::~Channel(){
-    server.removeChannel(*this);
+    server.clearChannel(*this);
 }
 
 //setters

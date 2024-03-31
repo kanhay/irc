@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 14:59:46 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 17:42:37 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ void    nickCommand(std::string &args, Client &c){
     if (!args.empty() && iss >> nn && iss.eof()){
         tolowercase(nn); //Nicknames are generally case-insensitive
         if (!isValidNickName(nn))
-            c.server.sendMsg(c.getSocketDescriptor(), "Erroneous Nickname\n");
+            c.server.sendMsg(c.getClientFD(), "Erroneous Nickname\n");
         if (c.server.isInUseNickname(nn))
-            c.server.sendMsg(c.getSocketDescriptor(), "Nickname is in use.\n");
+            c.server.sendMsg(c.getClientFD(), "Nickname is in use.\n");
         c.setNickname(nn); //in both case: choosing a nname for the first time or changing a nname 
     }
     else
@@ -73,7 +73,7 @@ void    userCommand(std::string &args, Client &c){
         std::cout << "i am printing in userCommand:\n" << "un = " << un << "hn = " << hn << "sn = " << sn << "rn = " << rn << "\n";
     }
     else
-        c.server.sendMsg(c.getSocketDescriptor(), "Not enough parameters.\n");
+        c.server.sendMsg(c.getClientFD(), "Not enough parameters.\n");
     c.registerClient();//client become registred in the server if the condition inside registerClient is true
 }
 
@@ -84,17 +84,17 @@ void    passCommand(std::string &args, Client &c){
         if (iss >> param && iss.eof()){
             param = param.substr(param.find_first_not_of(": ")); //skip : and space
             if (param != c.server.getPassword()){
-                c.server.sendMsg(c.getSocketDescriptor(), "Incorrect password.\n");
+                c.server.sendMsg(c.getClientFD(), "Incorrect password.\n");
                 c.setPasswordSended(false);
             }
             c.setPasswordSended(true);  //leave a mark if pass cmd succeed the first time
         }
         else
-            c.server.sendMsg(c.getSocketDescriptor(), "Invalid syntax for pass command.\n");
+            c.server.sendMsg(c.getClientFD(), "Invalid syntax for pass command.\n");
     }
     // else if ((!c.isRegistered() && c.isPasswordSended())) //in case a password has already been set but the client attempts to send the PASS command multiple times during the connection process
-    //     c.server.sendMsg(c.getSocketDescriptor(), "PASS command should only be sent once.\n");
+    //     c.server.sendMsg(c.getClientFD(), "PASS command should only be sent once.\n");
     else
-        c.server.sendMsg(c.getSocketDescriptor(), "You may not reregister.\n"); //the client is already registred
+        c.server.sendMsg(c.getClientFD(), "You may not reregister.\n"); //the client is already registred
     c.registerClient();//client become registred in the server if the condition inside registerClient is true
 }

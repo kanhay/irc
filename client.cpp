@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 13:41:41 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 21:28:06 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 17:39:47 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 Client::Client(){
     nickname = username = hostname = servername = realname = "\0";
     registered = PasswordSended = false;
-    socket = -1;
+    clientFD = -1;
 }
 Client::~Client(){
-    server.removeUser(*this);//client's fd is closed in removeuser
+    server.clear1Client(clientFD);//client's fd is closed in removeClient
     PasswordSended = false; //to reautenticate the next time he connect to the server
 }
 
@@ -29,8 +29,8 @@ void	Client::setIP(std::string IPaddr){
 void	Client::setBuffer(std::string rec){
 	this->buffer = rec;
 }
-void	Client::setClientID(int fd){
-	this->clientID = fd;
+void	Client::setClientFD(int fd){
+	this->clientFD = fd;
 }
 
 void Client::setNickname(std::string nn){
@@ -48,20 +48,17 @@ void Client::setServername(std::string sn){
 void Client::setRealname(std::string rn){
     realname = rn;
 }
-void Client::setSocketDescriptor(int sd){
-    socket = sd;
-}
+
 void Client::setRegistered(bool b){
     registered = b;
 }
-
 void Client::setPasswordSended(bool b){
     PasswordSended = b;
 }
 
 //getters
-int Client::getClientID(){
-	return (clientID);
+int Client::getClientFD(){
+	return (clientFD);
 }
 
 std::string Client::getNickname() const{
@@ -79,9 +76,6 @@ std::string Client::getRealname() const{
 std::string Client::getServername() const{
     return (servername);
 }
-int Client::getSocketDescriptor() const{
-    return (socket);
-}
 bool Client::isRegistered() const{
     return (registered);
 } 
@@ -95,7 +89,7 @@ void Client::registerClient(){
     if (PasswordSended && !nickname.empty() && !username.empty()
     && !hostname.empty() && !servername.empty() && !realname.empty()){
         registered = true;
-        server.addUser(*this);
+        server.addClient(*this);
     }
 }
 
