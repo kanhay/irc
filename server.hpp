@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:25:57 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 18:34:18 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 20:20:28 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class Server{
         void    addChannel(Channel const& channel);
         void    clearChannel(Channel const& channel);
 		// other
-		// void	handleCommands(int fd);
+		void	handleCommands(int i);
 
 };
 

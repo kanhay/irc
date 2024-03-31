@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:26:14 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 18:34:16 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 21:05:17 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void	Server::clear1Client(int fd){
 			break ;
 		}
 	}
-	close(fd);
 }
 
 void		Server::create_socket(){
@@ -157,6 +156,7 @@ void	Server::recieve_data(int fd){
 	if (total <= 0){
 		std::cout << "client gone" << std::endl;
 		clear1Client(fd);
+		close(fd);
 	}
 	else{
 		std::string	buf = buffer;
@@ -166,19 +166,18 @@ void	Server::recieve_data(int fd){
 			fond = new_buf.find_first_of("\t\r\n");
 			if (fond == std::string::npos)
 				return;
-			std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
+			// std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
 			std::string	commond = new_buf.substr(0, fond);
-			std::cout << "command:" << commond << "--" << std::endl;
+			// std::cout << "command:" << commond << "--" << std::endl;
 			size_t	sp = commond.find_first_of(" ");
 			this->command = commond.substr(0, sp);
-			std::cout << "com:" << this->command << "--" << std::endl;
+			// std::cout << "com:" << this->command << "--" << std::endl;
 			new_buf = new_buf.substr(fond+1, new_buf.size());
 			this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
-			std::cout << "argu:" << this->args << "--" << std::endl;
-			std::cout << "new_buff :" << &new_buf[i] << std::endl;
+			// std::cout << "argu:" << this->args << "--" << std::endl;
+			// std::cout << "new_buff :" << &new_buf[i] << std::endl;
 		}
 	}
-	// handleCommands();
 }
 
 void	Server::multi_clients(){
@@ -190,8 +189,9 @@ void	Server::multi_clients(){
 			{
 				if (fds[i].fd == serverFD)
 					acceptClient();
-				else
+				else{
 					recieve_data(fds[i].fd);
+					handleCommands(i);}
 			}
 		}
 	}
@@ -251,18 +251,21 @@ void    Server::clearChannel(Channel const& channel){
 //other
 
 void	Server::sendMsg(int clientFd, std::string msg){
-	std::cerr << clientFd << ">> Error: " << msg <<"\n";
+	std::cerr << ">> Error: " << msg << "for fd " << clientFd <<"\n";
+	exit(1);
 }
 
-// void	Server::handleCommands(Client &client){
-// 	tolowercase(command);
-// 	if (command == "user")
-// 		userCommand(args, client);
-// 	else if (command == "nick")
-// 		nickCommand(args, client);
-// 	else if (command == "pass")
-// 		passCommand(args, client);
-// }
+void	Server::handleCommands(int i){
+	tolowercase(command);
+	if (command == "user")
+		userCommand(args, clients[i]);
+	else if (command == "nick")
+		nickCommand(args, clients[i]);
+	else if (command == "pass")
+		passCommand(args, clients[i]);
+	else
+		sendMsg(clients[i].getClientFD(), ">>Unknown command\n");
+}
 
 void	Server::stopServer(){
 	channels.clear();
