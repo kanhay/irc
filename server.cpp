@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:26:14 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 15:02:31 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 15:27:15 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,9 +251,8 @@ void    Server::removeUser(Client const& client){
 }
 
 void	Server::removeAllUsers(){
-	for (unsigned int i = 0; i < clients.size(); i++){
+	for (unsigned int i = 0; i < clients.size(); i++)
 		close(clients[i].getSocketDescriptor());
-	}
 	clients.clear();
 }
 
@@ -278,10 +277,6 @@ void    Server::removeChannel(Channel const& channel){
     }
 }
 
-void	Server::removeAllChannels(){
-	channels.clear();
-}
-
 //other
 
 void	Server::sendMsg(int clientFd, std::string msg){
@@ -298,3 +293,8 @@ void	Server::handleCommands(std::string &cmd, std::string &args, Client &client)
 		passCommand(args, client);
 }
 
+void	Server::stopServer(){
+	channels.clear();
+	removeAllUsers();
+	close(serverID);
+}
