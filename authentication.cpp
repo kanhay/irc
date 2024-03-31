@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 21:39:48 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 14:59:46 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,20 +78,22 @@ void    userCommand(std::string &args, Client &c){
 }
 
 void    passCommand(std::string &args, Client &c){
-    if (!c.isRegistered() && !c.isPasswordSended()){ //if the client is not yet registred and didn't give password before
+    if (!c.isRegistered()){ //if the client is not yet registred and didn't give password before
         std::istringstream iss(args);
         std::string param;
         if (iss >> param && iss.eof()){
             param = param.substr(param.find_first_not_of(": ")); //skip : and space
-            if (param != c.server.getPassword())
+            if (param != c.server.getPassword()){
                 c.server.sendMsg(c.getSocketDescriptor(), "Incorrect password.\n");
+                c.setPasswordSended(false);
+            }
             c.setPasswordSended(true);  //leave a mark if pass cmd succeed the first time
         }
         else
-            c.server.sendMsg(c.getSocketDescriptor(), "Invalid syntax for user command.\n");
+            c.server.sendMsg(c.getSocketDescriptor(), "Invalid syntax for pass command.\n");
     }
-    else if ((!c.isRegistered() && c.isPasswordSended())) //in case a password has already been set but the client attempts to send the PASS command multiple times during the connection process
-        c.server.sendMsg(c.getSocketDescriptor(), "PASS command should only be sent once.\n");
+    // else if ((!c.isRegistered() && c.isPasswordSended())) //in case a password has already been set but the client attempts to send the PASS command multiple times during the connection process
+    //     c.server.sendMsg(c.getSocketDescriptor(), "PASS command should only be sent once.\n");
     else
         c.server.sendMsg(c.getSocketDescriptor(), "You may not reregister.\n"); //the client is already registred
     c.registerClient();//client become registred in the server if the condition inside registerClient is true

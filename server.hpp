@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:25:57 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 20:31:51 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 15:03:16 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class Server{
 		std::string 				args;
 		std::vector<struct pollfd>	fds;
 
-        std::vector<Client> clients; //the currently connected clients in the server (the key in map is the client's nickname)
+        std::vector<Client> clients; //the currently connected clients in the server
         std::vector<Channel> channels; //Available channels in the server
     public:
         Server();
@@ -65,8 +65,8 @@ class Server{
 		void		acceptClient();
 		void		recieve_data(int fd);
 		static void	sigHandler(int signum);
-		void		closeFD();
-		void		clearClient(int fd);
+		// void		closeFD();
+		// void		clearClient(int fd);
 
 		void		sendMsg(int clientFd, std::string msg); //needed to send error messages to a specific client
 
@@ -74,12 +74,13 @@ class Server{
         bool    isInUseNickname(std::string nickname); //true if a nickname is already choosed by another client
         void    addUser(Client const& client); //add the new client in the clients container (only once)
         void    removeUser(Client const& client); //close fd when removing user
+		void	removeAllUsers(); //close all clients fd and clear clients
 
         //managing channels
         bool    isInUseChName(std::string chName); //true if there an other channel with the same name
         void    addChannel(Channel const& channel);
         void    removeChannel(Channel const& channel);
-
+		void	removeAllChannels(); //clear channels
 		// other
 		void	handleCommands(std::string &cmd, std::string &args, Client &client);
 

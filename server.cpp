@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 16:26:14 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 21:37:38 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/03/31 15:02:31 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,13 @@ void    Server::removeUser(Client const& client){
     }
 }
 
+void	Server::removeAllUsers(){
+	for (unsigned int i = 0; i < clients.size(); i++){
+		close(clients[i].getSocketDescriptor());
+	}
+	clients.clear();
+}
+
 bool    Server::isInUseChName(std::string chName){
     for (unsigned int i = 0; i < channels.size(); i++){
         if (channels[i].getName() == chName)
@@ -269,6 +276,10 @@ void    Server::removeChannel(Channel const& channel){
             return ;
         }
     }
+}
+
+void	Server::removeAllChannels(){
+	channels.clear();
 }
 
 //other

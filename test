@@ -1,0 +1,1 @@
+cat /dev/random| nc pawssword port //should not abort
