@@ -5,27 +5,24 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/23 13:41:32 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 17:39:26 by khanhayf         ###   ########.fr       */
+/*   Created: 2024/04/01 18:16:57 by khanhayf          #+#    #+#             */
+/*   Updated: 2024/04/03 19:45:08 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef CLIENT_HPP
-#define CLIENT_HPP
 
+
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
 #include <iostream>
 #include <string>
-#include <cctype> //tolower fun
-#include <sstream>
 
-#include "Channel.hpp"
 #include "Server.hpp"
 
-class Channel;
 class Server;
 
-class Client{
-    private:
+class	Client{
+	private:
         int			clientFD;//The socket descriptor for the client's connection
 		std::string	clientIP;
 		std::string	buffer;
@@ -37,9 +34,7 @@ class Client{
         std::string realname; //the real name of the client
         bool registered; //Indicates whether the client succeeded to register to the server or not
         bool PasswordSended; //set to true the first time the correct password is given by the client
-
-    public:
-        static Server &server;
+	public:
         Client();
         ~Client();
 
@@ -47,7 +42,6 @@ class Client{
         void	setIP(std::string IPaddr);
 		void	setBuffer(std::string rec);
 		void	setClientFD(int fd);
-        
         void    setNickname(std::string nn);
         void    setUsername(std::string un);
         void    setHostname(std::string hn);
@@ -63,18 +57,13 @@ class Client{
         std::string getHostname() const;
         std::string getServername() const;
         std::string getRealname() const;
-        bool isRegistered() const; //return registred
-        bool    isPasswordSended(); //return passwordsended
-    
-        //other
-        void registerClient(); //register the client into the server if all the attributes related to the client's autentication are set
-};
+        bool		isRegistered() const; //return registred
+        bool		isPasswordSended(); //return passwordsended
+		
+		//other
+        void    clearAuthentication();
+		void registerClient(Server &s);
 
-//authentication utils
-void    tolowercase(std::string &str);
-bool    isValidNickName(std::string nickname);
-void    nickCommand(std::string &args, Client &c);
-void    userCommand(std::string &args, Client &c);
-void    passCommand(std::string &args, Client &c);
+};
 
 #endif

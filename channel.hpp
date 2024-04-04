@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/25 15:43:15 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/30 19:51:48 by khanhayf         ###   ########.fr       */
+/*   Created: 2024/04/01 18:17:26 by khanhayf          #+#    #+#             */
+/*   Updated: 2024/04/04 11:41:51 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ class Channel{
         std::vector<Client> operators; // the list of clients who have operator status in the channel
     
     public:
-        static Server &server;
-        Channel(Client &creator, std::string chname);
+        Channel(Client &creator, std::string chname, Server &s);
         ~Channel();
         
         //setters
@@ -59,16 +58,16 @@ class Channel{
         bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
 
-        void addOperator(Client & c); //Add a client as an operator of the channel
-        void removeOperator(Client & c); //Remove a client from operators list
+        // void addOperator(Client & c); //Add a client as an operator of the channel
+        // void removeOperator(Client & c); //Remove a client from operators list
         
-        void addRegularUser(Client & c);
-        void removeRegularUser(Client & c);
+        // void addRegularUser(Client & c);
+        // void removeRegularUser(Client & c);
         
         bool isOperator(Client const& c) const; //true if a given client is an operator in the channel
         bool isRegularuser(Client const& c) const; //true if a given client is a member in the channel 
         bool isMember(Client const& c); //the client is member if it is an operator or a regular user
-        bool isfull(); // true if operators.size() + regularUsers.size() == limit
+        // bool isfull(); // true if operators.size() + regularUsers.size() == limit
 
 };
 #endif

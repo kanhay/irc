@@ -6,11 +6,11 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/03/31 17:42:37 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/03 19:45:51 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Client.hpp"
+#include "Server.hpp"
 
 void    tolowercase(std::string &str){
     for (unsigned int i = 0; i < str.size(); i++)
@@ -36,65 +36,95 @@ bool isValidNickName(std::string nickname){
     return true;
 }
 
-void    nickCommand(std::string &args, Client &c){
-    std::istringstream iss(args);
-    std::string nn;
-    if (!args.empty() && iss >> nn && iss.eof()){
-        tolowercase(nn); //Nicknames are generally case-insensitive
-        if (!isValidNickName(nn))
-            c.server.sendMsg(c.getClientFD(), "Erroneous Nickname\n");
-        if (c.server.isInUseNickname(nn))
-            c.server.sendMsg(c.getClientFD(), "Nickname is in use.\n");
-        c.setNickname(nn); //in both case: choosing a nname for the first time or changing a nname 
+void    nickCommand(std::string &args, Client &c, Server &s){
+    if (args.empty()){
+        s.sendMsg(c.getClientFD(), "No nickname given.\n");
+        return ;
     }
+    tolowercase(args); //Nicknames are generally case-insensitive
+    std::string param;
+    if (args[0] == ':')
+        param = args.substr(1); //starting from index 1
     else
-        std::cerr << "Not enough parameters.\n"; exit (1);
-    c.registerClient();//client become registred in the server if the condition inside registerClient is true
+        param = args.substr(0, args.find_first_of(' '));
+    if (!isValidNickName(param)){
+        s.sendMsg(c.getClientFD(), "Erroneous Nickname\n");
+        return;}
+    if (s.isInUseNickname(param)){// check this only if new client
+        if (c.getNickname() == param) //in case a client try to change his nn with the same nickname setted before
+            return;
+    s.sendMsg(c.getClientFD(), "Nickname is in use.\n");
+    return ;}
+    c.setNickname(param); //in both case: choosing a nname for the first time or changing a nname 
+    if (!c.isRegistered()) //he can change the nick name after registration 
+    c.registerClient(s);//client become registred in the server if the condition inside registerClient is true
 }
 
-void    userCommand(std::string &args, Client &c){
+void    userCommand(std::string &args, Client &c, Server &s){
+    if (c.isRegistered()){
+        s.sendMsg(c.getClientFD(), "You may not reregister.\n");
+        return;}
+    if (args[0] == ':'){//it's not standard practice to use colons before every parameter in IRC commands.//the colon is reserved specifically for the trailing(last) parameter.
+        s.sendMsg(c.getClientFD(), "Invalid syntax for user command.\n");
+        return;
+    }
     std::istringstream iss(args);
     std::string un, hn, sn, rn;
     iss >> un >> hn >> sn;
-    iss >>std::ws;
+    if (hn[0] == ':' || sn[0] == ':'){
+        s.sendMsg(c.getClientFD(), "Invalid syntax for user command.\n");
+        return ;
+    }
+    iss >> std::ws;
     if (iss.peek() == ':'){
-        std::string restOfStrem;
-        getline(iss, restOfStrem);
-        restOfStrem = restOfStrem.substr(restOfStrem.find_first_not_of(": "));
-        rn = restOfStrem.substr(0, restOfStrem.find_first_of(':'));
+        getline(iss, rn);
+        rn = rn.substr(rn.find_first_not_of(":"));
     }
     else
         iss >> rn;
+    // if (!iss.eof()){
+    //     s.sendMsg(c.getClientFD(), "Invalid syntax for user command.\n");
+    //     return ;
+    // }
     if (!iss.fail() && !un.empty() && !hn.empty() && !sn.empty() && !rn.empty()){
         c.setUsername(un);
         c.setHostname(hn);
         c.setServername(sn);
         c.setRealname(rn);
-        std::cout << "i am printing in userCommand:\n" << "un = " << un << "hn = " << hn << "sn = " << sn << "rn = " << rn << "\n";
+        c.registerClient(s);//client become registred in the server if the condition inside registerClient is true
     }
     else
-        c.server.sendMsg(c.getClientFD(), "Not enough parameters.\n");
-    c.registerClient();//client become registred in the server if the condition inside registerClient is true
+        s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
 }
 
-void    passCommand(std::string &args, Client &c){
-    if (!c.isRegistered()){ //if the client is not yet registred and didn't give password before
-        std::istringstream iss(args);
+void    passCommand(std::string &args, Client &c, Server &s){
+    c.clearAuthentication();
+    // std::cout << "args||" << args << "||\n";
+    if (c.isRegistered()){
+        s.sendMsg(c.getClientFD(), "You may not reregister.\n");
+        return ;}
+    if (!args.empty() && args[0]){
         std::string param;
-        if (iss >> param && iss.eof()){
-            param = param.substr(param.find_first_not_of(": ")); //skip : and space
-            if (param != c.server.getPassword()){
-                c.server.sendMsg(c.getClientFD(), "Incorrect password.\n");
-                c.setPasswordSended(false);
-            }
-            c.setPasswordSended(true);  //leave a mark if pass cmd succeed the first time
+        if (args[0] == ':'){
+            // args = args.substr(1);
+            // param = args;
+            param = args.substr(1);
         }
         else
-            c.server.sendMsg(c.getClientFD(), "Invalid syntax for pass command.\n");
+            param = args.substr(0, args.find_first_of(' '));
+        // if (param != args){ //there is more argument in args 
+        //     s.sendMsg(c.getClientFD(), "Invalid syntax for pass command.\n"); //optionnal
+        //     return ;}
+        if (param != s.getPassword()){
+            // c.setPasswordSended(false);
+            s.sendMsg(c.getClientFD(), "Incorrect password.\n");
+            return;
+        }
+        else{
+            c.setPasswordSended(true);  //leave a mark if pass cmd succeed the first time
+            c.registerClient(s);//client become registred in the server if the condition inside registerClient is true
+        }
     }
-    // else if ((!c.isRegistered() && c.isPasswordSended())) //in case a password has already been set but the client attempts to send the PASS command multiple times during the connection process
-    //     c.server.sendMsg(c.getClientFD(), "PASS command should only be sent once.\n");
     else
-        c.server.sendMsg(c.getClientFD(), "You may not reregister.\n"); //the client is already registred
-    c.registerClient();//client become registred in the server if the condition inside registerClient is true
+        s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
 }
