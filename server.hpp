@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:27 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/04 11:53:38 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 18:07:13 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 #include <sstream>
 #include <map>
 
+#include "responses.hpp"
+
 class Client;
 class Channel;
 //TODO : need canonical form for classes
@@ -45,10 +47,10 @@ class	Server{
 		std::string 						command;
 		std::string 						args;
 		std::vector<struct pollfd>			fds;
-		std::vector<Client>					clients;
-		std::vector<Channel>				channels; 
 		// std::map<std::string, std::string>	map;
 	public:
+		std::vector<Client>					clients;
+		std::vector<Channel>				channels; 
 		Server();
 		~Server();//close users fds before quitting
 		//--Setters--//
@@ -73,10 +75,11 @@ class	Server{
 		bool    	isInUseChName(std::string chName);
 		void		sendMsg(int clientFd, std::string msg);
 		void		handleCommands(int i);
-		// bool		isRegistered(std::string nickname);
+		bool		isRegistered(std::string nickname);
 		// bool		isMember(Client &c, Channel &ch);
 		Client		&findClient(std::string nn);
 		Channel		&findChannel(std::string chname);
+		// void	channelsInvited2(Client & c);
 };
 
 void    tolowercase(std::string &str);
@@ -85,5 +88,6 @@ void    nickCommand(std::string &args, Client &c, Server &s);
 void    userCommand(std::string &args, Client &c, Server &s);
 void    passCommand(std::string &args, Client &c, Server &s);
 void	inviteCommand(std::string &args, Client &c, Server &s);
+void    modeCommand(std::string &args, Client &c, Server &s);
 
 #endif

@@ -6,14 +6,14 @@
 #    By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/01 18:16:43 by khanhayf          #+#    #+#              #
-#    Updated: 2024/04/03 23:25:27 by khanhayf         ###   ########.fr        #
+#    Updated: 2024/04/06 14:20:00 by khanhayf         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 NAME	= ircserv
 
-SRCS	= main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp invite.cpp
+SRCS	= main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp invite.cpp mode.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 

@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:06 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/03 19:45:35 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 15:29:42 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,15 +98,31 @@ void Client::registerClient(Server &s){
     if (isPasswordSended() && !nickname.empty() && !username.empty()
     && !hostname.empty() && !servername.empty() && !realname.empty()){
         registered = true;
-        s.sendMsg(getClientFD(), "You are successfully registered.\n");
-        // s.addClient(*this);
-        // std::cout << "------registered successfully------\n";
-        // std::cout << "nn = " << getNickname() << "\n";
-        // std::cout << "un = " << getUsername() << "\n";
-        // std::cout << "hn = " << getHostname() << "\n";
-        // std::cout << "sn = " << getServername() << "\n";
-        // std::cout << "rn = " << getRealname() << "\n";
-        // std::cout << "pw = " << isPasswordSended() << "\n";
-        // std::cout << "registered = " << isRegistered() << "\n";
+        s.sendMsg(getClientFD(), RPL_WELCOME(getNickname(), getUsername()));
+        s.sendMsg(getClientFD(), ":ircserv 375 " + getNickname() + " ::ircserv message of the day\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Hello, World!\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Welcome to the\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :        __  .______        ______     _______. _______ .______     ____    ____ \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |  | |   _  \\      /      |   /       ||   ____||   _  \\    \\   \\  /   / \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |  | |  |_)  |    |  ,----'  |   (----`|  |__   |  |_)  |    \\   \\/   /  \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |  | |      /     |  |        \\   \\    |   __|  |      /      \\      /   \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |  | |  |\\  \\----.|  `----.----)   |   |  |____ |  |\\  \\----.  \\    /    \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |__| | _| `._____| \\______|_______/    |_______|| _| `._____|   \\__/     \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :                                                               AUTONOMOUS ZONE\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :                                                                                      \r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Thank you for using ircserv!\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  End of message of the day.\r\n");
+        // s.sendMsg(getClientFD(), "You are successfully registered.\n");\r\n"
     }
+        std::cout << "------registered successfully------\n";
+        std::cout << "nn = " << getNickname() << "\n";
+        std::cout << "un = " << getUsername() << "\n";
+        std::cout << "hn = " << getHostname() << "\n";
+        std::cout << "sn = " << getServername() << "\n";
+        std::cout << "rn = " << getRealname() << "\n";
+        std::cout << "pw = " << isPasswordSended() << "\n";
+        std::cout << "registered = " << isRegistered() << "\n";
 }
+
+

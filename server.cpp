@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/04 11:53:47 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 18:07:07 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,8 @@ void	Server::handleCommands(int fd){
 		passCommand(args, clients[i], *this);
 	else if (command == "invite")
 		inviteCommand(args, clients[i], *this);
+	else if (command == "mode")
+		modeCommand(args, clients[i], *this);
 		
 	// std::cout << "----------------------from the server -------------------------------------\n";
     //     std::cout << "------after cmd------\n";
@@ -252,13 +254,13 @@ void    Server::addChannel(Channel const& channel){
     channels.push_back(channel);
 }
 
-// bool	Server::isRegistered(std::string nickname){
-// 	for (unsigned int i = 0; i < clients.size(); i++){
-//         if (clients[i].getNickname() == nickname && clients[i].isRegistered())
-//             return true;
-//     }
-// 	return false;
-// }
+bool	Server::isRegistered(std::string nickname){
+	for (unsigned int i = 0; i < clients.size(); i++){
+        if (clients[i].getNickname() == nickname && clients[i].isRegistered())
+            return true;
+    }
+	return false;
+}
 
 bool    Server::isInUseChName(std::string chName){
     for (unsigned int i = 0; i < channels.size(); i++){
@@ -293,3 +295,10 @@ Channel		&Server::findChannel(std::string chname){
 	}
 	return channels[i];//channels end if not found
 }
+
+// void	Server::channelsInvited2(Client & c){
+// 	for (unsigned int i = 0; i < channels.size(); i++){
+// 		if (channels[i].isInvited(c));
+			
+// 	}
+// }
