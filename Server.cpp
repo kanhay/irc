@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 18:07:07 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 23:35:46 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ Server::Server(){
 	password = "\0";
 }
 
-Server::~Server(){}
+Server::~Server(){
+	clearClientslist();//do not forget to close clients fd
+	clearChannelslist();
+}
 
 void	Server::setPort(int n){
 	this->port = n;
@@ -39,6 +42,9 @@ int	Server::getPort(){
 }
 std::string	Server::getPassword(){
 	return (this->password);
+}
+int	Server::getServerFD(){
+	return serverFD;
 }
 void	Server::clearClient(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
@@ -302,3 +308,10 @@ Channel		&Server::findChannel(std::string chname){
 			
 // 	}
 // }
+
+void	Server::clearClientslist(){
+	channels.clear();
+}
+void	Server::clearChannelslist(){
+	clients.clear();
+}

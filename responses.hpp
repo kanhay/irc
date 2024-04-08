@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 17:48:09 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/08 13:48:37 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,21 @@
 #define ERR_ERRONEUSNICKNAME(nick) ":ircserv 432 " + nick + " :Erroneus nickname!\r\n"
 #define ERR_NOTREGISTERED(nick) ":ircserv 451 " + nick + " :You have not registered !\r\n"
 #define ERR_NOSUCHCHANNEL(channel, nick) ":ircserv 403 " + nick + " " + channel + " :No such channel\r\n"
-#define ERR_NOSUCHNICK(senderNick, argument) ":ircserv 401 " + senderNick + " " + argument + " :No such nick\r\n" 
+#define ERR_NOSUCHNICK(nick, argument) ":ircserv 401 " + nick + " " + argument + " :No such nick\r\n" 
 #define ERR_NOTONCHANNEL(nick, channel) ":ircserv 442 " + channel + " " + ":You're not on that channel\r\n"
 #define ERR_NOTOP(nick, channel) ":ircserv 482 " + nick + channel + " " + ":You're not a channel operator\r\n"
 #define ERR_USERONCHANNEL(channel, guest, nick) ":ircserv 443 " + nick + " " + guest + " " + channel + "  :is already on channel\r\n"
 #define RPL_INVITE(nick, username, clienthostname, invited, channel) ":" + nick + "!~" + username + "@" + clienthostname + " INVITE " + invited + " :" + channel + "\r\n"
 #define RPL_ENDOFINVITE(nick) ":ircserv 337 " + nick + " :END of INVITE list\r\n"
+#define RPL_INVITING(nick, invited, channel) ":ircserv 341 " + nick + " Inviting " + invited + " to " + channel + "\r\n"
+#define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is unknown mode char to me\r\n"
+#define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode\r\n"
+#define ERR_USERNOTINCHANNEL(nick, user, channel) ":ircserv 441 " + nick + " " + user + " " + channel + " " + ":they aren't on that channel\r\n"
+
+
+
+
+
 
 
 
@@ -43,7 +52,6 @@
 
 // #define ERR_ALREADYREGISTERED(nick) ":" + "ircserv" + " 462 " + nick + " :You may not reregister !\r\n"
 
-#define RPL_INVITING(inviting, invited, channel) ":ircserv 341 " + inviting + " " + invited + " " + channel + " :Inviting " + invited + " to " + channel + "\r\n"
 #define ERR_BADCHANNELNAME(nick, channelname) ":" + "ircserv" + " 476 " + nick + " " + channelname + " :Invalid channel name." + "\r\n"
 #define ERR_CHANNELISFULL(nick, channelName) ":" + nick + " 471 " + channelName + " :Cannot join channel (+l)\r\n"
 #define ERR_BADCHANNELKEY(nick, channelName) ":" + "ircserv" + " 475 " + nick + " " + channelName + " :Cannot join channel (+K) - bad key\r\n"
@@ -60,8 +68,6 @@
 #define RPL_MODEIS(channel, mode) ":" + "ircserv" + " MODE " + channel + " " + mode + "\r\n"
 #define RPL_MODEISLIMIT(channel, mode, newlimit) ":" + "ircserv" + " MODE " + channel + " " + mode + " " + newlimit + "\r\n"
 #define RPL_MODEISOP(channel, mode, target) ":" + "ircserv" + " MODE " + channel + " " + mode + " " + target + "\r\n"
-#define ERR_INVALIDMODEPARAM(channel, flag) ":" + "ircserv" + " 696 " + channel + " " + flag + " * you must specifiy a parameter for the op mode\r\n"
-#define ERR_USERNOTINCHANNEL(hostname, channel) ":" + "ircserv" + " 441 " + channel + " " + ":they aren't on that channel\r\n"
 
 #define RPL_CREATIONTIME(hostname, channelName, nick, time) ":" + "ircserv" + " 329 " + nick + " " + channelName + " " + time + "\r\n"
 #define RPL_CHANNELMODES(hostname, channelName, nick, channelmode) ":" + "ircserv" + " 324 " + nick + " " + channelName + " " + channelmode + "\r\n"
@@ -77,7 +83,6 @@
 #define ERR_BOT(hostname, nick) ":" + "ircserv" + " 450 " + nick + "enter [BOT generate] to generate a joke" + "\r\n"
 #define RPL_UMODEIS(hostname, channelname) ":" + "ircserv" + " MODE " + channelname + " +nt\r\n"
 
-#define ERR_UNKNOWNMODE(nick, channel, character) ":" + "ircserv" + " 472 " + nick + " " + channel + " " + character + " :is unknown mode char to me\r\n"
 #define RPL_YOUREOPER(hostname, nick) ":" + "ircserv" + " 381 " + nick + ":You are now an IRC operator\r\n"
 #define RPL_KICK(kicker, username, host, channel, targetuser, reason) ":" + kicker + "!" + username + "@" + host + " KICK " + channel + " " + targetuser + " :" + reason + "\r\n"
 #define PRIVMSG_FORMAT(senderNick, senderUsername, senderHostname, receiver, message) ":" + senderNick + "!~" + senderUsername + "@" + senderHostname + " PRIVMSG " + receiver + " :" + message + "\r\n"

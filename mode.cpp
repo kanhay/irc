@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:33:00 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/06 20:42:55 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/08 13:51:05 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,51 +43,65 @@
 // }
 
 void    modeCommand(std::string &args, Client &c, Server &s){
-    if (args.empty() || !args[0] || args[0] != '#'){
-        if (args.empty() || !args[0])
-            s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
-        else
-            s.sendMsg(c.getClientFD(), "No such channel.\n");
-        return ;
-    }
-    std::istringstream iss(args);
+    Channel ch(c, "gogo", s);//for test
+    if (args.empty() || !args[0]){
+        s.sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname()));
+        return;}
+    else if (args[0] == ':' && args[1] != '#'){
+        s.sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(args.substr(1), c.getNickname()));
+        return ;}
+    else if (args[0] != '#' && args[0] != ':'){
+        s.sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(args.substr(0, args.find_first_of(" ")), c.getNickname()));
+        return ;}
+    std::stringstream ss(args);
     std::string chan;
-    args = args.substr(1);
-    iss >> chan;
+    if (args[0] == ':' && args[1] == '#'){
+        args = args.substr(2);
+        ss.clear();
+        ss << args;
+        getline(ss, chan);}
+    else if (args[0] == '#'){
+        args = args.substr(1);
+        ss.clear();
+        ss << args;
+        ss >> chan;}
+        std::cout << chan << "|\n";
+        std::cout << s.channels[0].getName() << "|\n";
     if (!s.isInUseChName(chan)){
-        s.sendMsg(c.getClientFD(), "No such channel.\n");
+        s.sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(("#" + chan), c.getNickname()));
         return ;
     }
+    if (ss.eof()) //there is no mode //mode #ch
+        return ;
     Channel &channel = s.findChannel(chan);
     if (!channel.isOperator(c)){
-        s.sendMsg(c.getClientFD(), "You are not an chanop.\n");
+        s.sendMsg(c.getClientFD(), ERR_NOTOP(c.getNickname(), ("#" + chan)));
         return ;
     }
     std::string modestring, key, limit, user, list;
     int k, o, l;
     k = o = l = 0;
     std::string modes = "+-litok";
-    while (iss >> modestring){
+    while (ss >> modestring){
     for (unsigned i = 0; i < modestring.size(); i++){
         if (modes.find(modestring[i]) == std::string::npos){
-            s.sendMsg(c.getClientFD(), "There is unknown mode char to me.\n");
+            s.sendMsg(c.getClientFD(), ERR_UNKNOWNMODE(c.getNickname(), ("#" + chan), modestring[i]));
             return ;
         }
         else{
             while (modestring[i] == modestring[i + 1])//ADD the last element when repeated
                 i++;
             if (modestring[i] == 'k' && k++ == 0) //read from iss only the first time k is found
-                iss >> key;
+                ss >> key;
             if (modestring[i] == 'l'  && l++ == 0)
-                iss >> limit;
+                ss >> limit;
             if (modestring[i] == 'o' && o++ == 0)
-                iss >> user;
+                ss >> user;
             }
             list += modestring[i];
         }
     }
-    // xec_mode(list, key, limit, user, channel);
-    //xec
+    //xec part 
     char sign = '+';
     for (unsigned int i = 0; i < list.size(); i++){
         if (list[i] == '+' || list[i] == '-')
@@ -99,7 +113,7 @@ void    modeCommand(std::string &args, Client &c, Server &s){
                         channel.setHasKey(true);
                         channel.setKey(key);}
                     else
-                        s.sendMsg(c.getClientFD(), "Key already set.\n");
+                        continue ; //do nothing if the Key already set
                 }
                 else{
                     channel.setHasKey(false);
@@ -107,7 +121,7 @@ void    modeCommand(std::string &args, Client &c, Server &s){
                 }
             }
             else
-                s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
+                s.sendMsg(c.getClientFD(), ERR_INVALIDMODEPARAM(c.getNickname(), ("#" + chan), 'k', "key"));
         }
         else if (list[i] == 'l'){
             if (!limit.empty()){
@@ -124,27 +138,24 @@ void    modeCommand(std::string &args, Client &c, Server &s){
                 }
             }
             else
-                s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
+                s.sendMsg(c.getClientFD(), ERR_INVALIDMODEPARAM(c.getNickname(), ("#" + chan), 'l', "limit"));
         }
         else if (list[i] == 'i'){
             if (sign == '+')
                 channel.setMode("invite-only");
             else
                 channel.setMode("");
-            
         }
         else if (list[i] == 't'){
-            if (channel.isOperator(c)){
-                if (sign == '+')
-                    channel.setTopicLock(true);
-                else
-                    channel.setTopicLock(false);
-            }
+            if (sign == '+')
+                channel.setTopicLock(true);
+            else
+                channel.setTopicLock(false);
         }
         else if (list[i] == 'o'){
             if (!user.empty()){
                 if (!s.isInUseNickname(user))
-                    s.sendMsg(c.getClientFD(), "No such nick.\n");
+                    s.sendMsg(c.getClientFD(), ERR_NOSUCHNICK(c.getNickname(), user));
                 if (channel.isMember(s.findClient(user))){
                     if (sign == '+')
                         channel.addOperator(s.findClient(user)); //check if the nickname is in use and if its registered then add it in addoprator
@@ -152,31 +163,10 @@ void    modeCommand(std::string &args, Client &c, Server &s){
                         channel.addRegularUser(s.findClient(user)); //check if the nickname is in use and if its registered then add it in addoprator
                 }
                 else
-                    s.sendMsg(c.getClientFD(), "Not member in the channel.\n");
+                    s.sendMsg(c.getClientFD(), ERR_USERNOTINCHANNEL(c.getNickname(), user, ("#" + chan)));
             }
             else
-                s.sendMsg(c.getClientFD(), "Not enough parameters.\n");
+                s.sendMsg(c.getClientFD(), ERR_INVALIDMODEPARAM(c.getNickname(), ("#" + chan), 'o', "op"));
         }
     }
 }
-
-
-    //         if (modestring[i] == 'k' && modestring[i + 1] == ' '){
-    //             i += 2;
-    //             key = modestring.substr(i, modestring.find_first_of(" "));
-    //         }
-    //         if (modestring[i] == 'l' && modestring[i + 1] == ' '){
-    //             i += 2;
-    //             limit = modestring.substr(i, modestring.find_first_of(" "));
-    //         }
-    //         list += list[i];
-    //     }
-    // }
-    // if (list.find('k') != std::string::npos)
-    //     iss >> pw;
-    // if (list.find('l') != std::string::npos)
-    //     iss >> limit
-    
-// }
-//MODE #channel +t  //(topic settable by channel operator only)
-//MODE #channel +o nickname   //gives operator status to the user with the nickname "nickname" in the channel "#channel". 

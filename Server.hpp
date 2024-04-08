@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:27 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 18:07:13 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 23:26:34 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ class	Server{
 		//--Getters--//
 		int			getPort();
 		std::string	getPassword();
+		int			getServerFD();
 		//----//
 		void		create_socket();
 		void		launch_server();
@@ -69,7 +70,6 @@ class	Server{
 		void		closeFD();
 		void		clearClient(int fd);
 
-		// void		addClient(Client const& client);
 		void		addChannel(Channel const& channel);
 		bool    	isInUseNickname(std::string nickname);
 		bool    	isInUseChName(std::string chName);
@@ -79,6 +79,9 @@ class	Server{
 		// bool		isMember(Client &c, Channel &ch);
 		Client		&findClient(std::string nn);
 		Channel		&findChannel(std::string chname);
+
+		void		clearClientslist();
+		void		clearChannelslist();
 		// void	channelsInvited2(Client & c);
 };
 

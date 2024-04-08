@@ -6,17 +6,17 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:26:29 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 18:27:17 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/07 21:58:05 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 void	inviteCommand(std::string &args, Client &c, Server &s){
-        if (!c.isRegistered()){
-            s.sendMsg(c.getClientFD(), ERR_NOTREGISTERED(c.getNickname()));
-            return ;
-        }
+    if (!c.isRegistered()){
+        s.sendMsg(c.getClientFD(), ERR_NOTREGISTERED(c.getNickname()));
+        return ;
+    }
     std::stringstream ss(args);
     std::string guest;
     std::string chan;
@@ -27,7 +27,21 @@ void	inviteCommand(std::string &args, Client &c, Server &s){
         getline(ss, guest);}
     else
         ss >> guest;
-    ss >> chan;
+    getline(ss, chan);
+    if (!chan.empty() && chan[0] == ':' && chan[1] == '#'){
+        chan = chan.substr(2);
+        ss.clear();
+        ss << chan;
+        chan.clear();
+        getline(ss, chan);
+    }
+    else if (!chan.empty() && chan[1] == '#'){
+        chan = chan.substr(1);
+        ss.clear();
+        ss << chan;
+        chan.clear();
+        ss >> chan;
+    }
     if (guest.empty() || (guest == c.getNickname() && chan.empty())){
         s.sendMsg(c.getClientFD(), RPL_ENDOFINVITE(c.getNickname()));//End of Invite List
         return ;
@@ -66,6 +80,7 @@ void	inviteCommand(std::string &args, Client &c, Server &s){
         }
     }
     else{
+        s.sendMsg(s.getServerFD(), RPL_INVITING(c.getNickname(), guest, ("#" + chan)));
         s.sendMsg(c.getClientFD(), ERR_NOSUCHNICK(c.getNickname(), guest));
         return ;
     }
