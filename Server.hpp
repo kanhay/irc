@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:27 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 23:26:34 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/13 16:39:13 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <map>
+#include <fstream>
 
 #include "responses.hpp"
 
@@ -49,6 +50,7 @@ class	Server{
 		std::vector<struct pollfd>			fds;
 		// std::map<std::string, std::string>	map;
 	public:
+		std::vector<std::string>			sayingsBox;
 		std::vector<Client>					clients;
 		std::vector<Channel>				channels; 
 		Server();
@@ -83,6 +85,8 @@ class	Server{
 		void		clearClientslist();
 		void		clearChannelslist();
 		// void	channelsInvited2(Client & c);
+
+		void	fillSayingsBox(std::string fileName);
 };
 
 void    tolowercase(std::string &str);
@@ -92,5 +96,6 @@ void    userCommand(std::string &args, Client &c, Server &s);
 void    passCommand(std::string &args, Client &c, Server &s);
 void	inviteCommand(std::string &args, Client &c, Server &s);
 void    modeCommand(std::string &args, Client &c, Server &s);
+void    botCommand(Client &c, Server &s);
 
 #endif

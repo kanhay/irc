@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 23:35:46 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/13 16:39:24 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	Server::sigHandler(int signum){
 Server::Server(){
 	serverFD = -1; 
 	password = "\0";
+	fillSayingsBox("sayings.txt");
 }
 
 Server::~Server(){
@@ -243,6 +244,8 @@ void	Server::handleCommands(int fd){
 		inviteCommand(args, clients[i], *this);
 	else if (command == "mode")
 		modeCommand(args, clients[i], *this);
+	else if (command == "bot")
+		botCommand(clients[i], *this);
 		
 	// std::cout << "----------------------from the server -------------------------------------\n";
     //     std::cout << "------after cmd------\n";
@@ -314,4 +317,14 @@ void	Server::clearClientslist(){
 }
 void	Server::clearChannelslist(){
 	clients.clear();
+}
+
+void	Server::fillSayingsBox(std::string fileName){
+	std::fstream base(fileName);
+    if (!base.is_open())
+        throw std::runtime_error("Can not open the sayings data base\n");
+    std::string line;
+    while (std::getline(base, line))
+        sayingsBox.push_back(line);
+    base.close();
 }
