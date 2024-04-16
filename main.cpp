@@ -6,13 +6,14 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:48 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 23:34:01 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/16 16:48:25 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "Server.hpp"
 #include <cstdlib>
+
 int	main(int ac, char **av){
 	Server	serv;
 	try{
