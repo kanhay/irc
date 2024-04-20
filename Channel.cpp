@@ -1,20 +1,9 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/01 18:17:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/16 16:40:48 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Channel.hpp"
 
 Channel::Channel(Client &creator, std::string chname, Server &s)
-:name(chname), topicLock(false), modeLock(false), hasLimit(false), hasKey(false){
+:name(chname), topic(chname), topicLock(false), hasLimit(false), hasKey(false){
     operators.push_back(creator); //the channel creator is considered an operator by default
+    this->mode = "";//////ik
     s.addChannel(*this);
 }
 
@@ -32,9 +21,9 @@ void Channel::setTopic(std::string newTopic){
 void Channel::setKey(std::string k){
     key = k;
 }
-void Channel::setModeLock(bool b){
-    modeLock = b;
-}
+// void Channel::setModeLock(bool b){
+//     modeLock = b;
+// }
 void Channel::setTopicLock(bool b){
     topicLock = b;
 }
@@ -66,9 +55,9 @@ std::string Channel::getKey() const{
 int Channel::getlimit() const{
     return limit;
 }
-bool Channel::isModelocked() const{
-    return modeLock;
-}
+// bool Channel::isModelocked() const{
+//     return modeLock;
+// }
 bool Channel::isTopiclocked() const{
     return topicLock;
 }
@@ -106,7 +95,7 @@ void Channel::removeOperator(Client & c){
     }
 }
 
-void Channel::addRegularUser(Client & c){
+void Channel::addRegularUser(Client &c){
     if (c.isRegistered()){
         if (isOperator(c))
             removeOperator(c);
@@ -117,14 +106,14 @@ void Channel::addRegularUser(Client & c){
 bool Channel::isOperator(Client const& c) const{
     for (unsigned int i = 0; i < operators.size(); i++){
         if (operators[i].getNickname() == c.getNickname())
-        return true;
+            return true;
     }
     return false;
 }
 bool Channel::isRegularuser(Client const& c) const{
     for (unsigned int i = 0; i < regularUsers.size(); i++){
         if (regularUsers[i].getNickname() == c.getNickname())
-        return true;
+            return true;
     }
     return false;
 }
@@ -151,3 +140,18 @@ bool Channel::isMember(Client const& c){
 //     }
 //     return false;
 // }
+
+
+
+
+//////ik
+void Channel::sendMsg2Members(Server &s, Client &c){
+    for(size_t i = 0; i < this->regularUsers.size(); ++i){
+        if (this->regularUsers[i].getNickname() != c.getNickname())
+            s.sendMsg(this->regularUsers[i].getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), this->getName(), this->regularUsers[i].getClientIP()));
+    }
+    for(size_t i = 0; i < this->operators.size(); ++i){
+        if (this->operators[i].getNickname() != c.getNickname())
+            s.sendMsg(this->operators[i].getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), this->getName(), this->operators[i].getClientIP()));
+    }
+}

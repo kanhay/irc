@@ -37,7 +37,14 @@ class	Server{
 		// std::map<std::string, std::string>	map;
 		std::vector<std::string>			sayingsBox;//M
 		std::vector<Client>					clients;
-		std::vector<Channel>				channels; 
+		std::vector<Channel>				channels;
+
+
+		// join
+		int existPassword;
+		std::vector<std::string> joinChannel;
+		std::vector<std::string> joinPassword;
+		std::vector<std::pair<std::string, std::string> > channelPass;
 	public:
 		Server();
 		~Server();//close users fds before quitting//M
@@ -77,9 +84,33 @@ class	Server{
         void	inviteCommand(std::string &args, Client &c);//M
         void    modeCommand(std::string &args, Client &c);//M
         void    botCommand(Client &c);//M
+
+		// ikrame
+		int		argsJoin(void);
+		void	joinCommand(Client &c);
+		void	execJoinCommand(Client &c);
+		int		validArgsTopic(void);
+		int		validArgsKick(void);
+		void	topicCommand(Client &c);
+		void	execTopicCommand(void);
+		void	kickCommand(Client &c);
+		void	execKickCommand(void);
+		int 	joinSingleChannel(void);
+		void	joinMultiChannels(void);
+
+		void 	whithoutPassword(void);
+		void 	whithPassword(void);
+		void	createChannel(Client &c, int i);
+		void	addChannel(Client &c, int i);
+
 };
 
 void    tolowercase(std::string &str);//M
 bool	isValidNickName(std::string nickname);//M
+
+
+///////
+std::string	skipSpaces(std::string str);
+int countComma(std::string str);
 
 #endif

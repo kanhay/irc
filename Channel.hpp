@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/01 18:17:26 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 18:07:23 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
@@ -32,7 +20,7 @@ class Channel{
         unsigned int limit; //The maximum number of clients allowed in the channel
     
         bool topicLock; // true if only chanop can change the channel's topic
-        bool modeLock; // true if only chanop can change the channel's mode
+        // bool modeLock; // true if only chanop can change the channel's mode 
         bool hasLimit; // to be setted with true using mode +l or mode -l o let the number of members unlimited
         bool hasKey;
         //containers
@@ -49,7 +37,7 @@ class Channel{
         void setTopic(std::string newTopic);
         void setKey(std::string k);
         void setHasKey(bool b);
-        void setModeLock(bool b); //lock or unlock the mode
+        // void setModeLock(bool b); //lock or unlock the mode
         void setTopicLock(bool b); //lock or unlock the Topic
         void setHasLimit(bool b);
         void setLimit(unsigned int l);
@@ -60,7 +48,7 @@ class Channel{
         std::string getMode() const; // return mode
         std::string getKey() const;
         int getlimit() const;
-        bool isModelocked() const; // return modeLock
+        // bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
         bool hasALimit();
         bool hasAKey();
@@ -79,5 +67,9 @@ class Channel{
         bool isMember(Client const& c); //the client is member if it is an operator or a regular user
         // bool isfull(); // true if operators.size() + regularUsers.size() == limit
 
+
+
+        ///////ik
+        void sendMsg2Members(Server &s, Client &c);
 };
 #endif

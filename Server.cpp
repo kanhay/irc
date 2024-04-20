@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
+/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/16 15:44:57 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/20 18:23:24 by iassafe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	Server::closeFD(){
 
 void		Server::create_socket(){
 	struct sockaddr_in serveraddress;
-	struct pollfd		pollf;		
+	struct pollfd		pollf;
 	memset(&serveraddress, 0, sizeof(serveraddress));
 	serveraddress.sin_family = AF_INET;
 	serveraddress.sin_port = htons(this->port);
@@ -152,6 +152,16 @@ std::string	skip_spaces(std::string str){
 	return (str);
 }
 
+//
+static int validCommand(std::string &cmd){
+    if (cmd == "join" || cmd == "privmsg" || cmd == "topic" \
+        || cmd == "kick" || cmd == "mode" || cmd == "pass" || \
+        cmd == "user" || cmd == "invite" || cmd == "bot" || cmd == "nick")
+        return(1);
+    return(0);
+}
+//
+
 void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	char	buffer[1024];
 
@@ -177,7 +187,7 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 				while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
 					ind++;
 				if (commond[ind] == '\n')
-					this->args = '\0';
+					this->args = "";
 				else
 					this->args = commond.substr(ind, fond);
 				this->command = commond.substr(0, sp);
@@ -187,7 +197,17 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 				this->args = '\0';
 			}
 			new_buf = new_buf.substr(fond+1, new_buf.size());
-			handleCommands(fd);//M
+			to_lower(this->command);
+			unsigned int j = 0;
+			for (j = 0; j < this->clients.size(); j++){
+				if (clients[j].getClientFD() == fd){
+					break ;
+				}
+			}
+			if (validCommand(this->command))
+				handleCommands(fd);//M
+			else
+				sendMsg(fd, ERR_UNKNOWNCOMMAND(this->clients[j].getNickname(), this->command));
 			command.clear();//M
 			args.clear();//M
 
@@ -230,7 +250,7 @@ bool    Server::isInUseNickname(std::string nickname){
 }
 
 void	Server::handleCommands(int fd){//M
-	tolowercase(command);
+	// tolowercase(command);
 	unsigned int i = 0;
 	for (i = 0; i < clients.size(); i++){
 		if (clients[i].getClientFD() == fd){
@@ -239,18 +259,33 @@ void	Server::handleCommands(int fd){//M
 	}
 	if (i == clients.size()) //this is not part of the implementation just in case this happens
 		std::cout << "Client no found in container\n";
-	if (command == "user")
-		userCommand(args, this->clients[i]);
-	else if (command == "nick")
-		nickCommand(args, clients[i]);
-	else if (command == "pass")
-		passCommand(args, clients[i]);
-	else if (command == "invite")
-		inviteCommand(args, clients[i]);
-	else if (command == "mode")
-		modeCommand(args, clients[i]);
-	else if (command == "bot")
-		botCommand(clients[i]);
+	if (this->command == "user" || this->command == "nick" || this->command == "pass"){
+		if (this->command == "user")
+			userCommand(args, this->clients[i]);
+		else if (this->command == "nick")
+			nickCommand(args, clients[i]);
+		else if (this->command == "pass")
+			passCommand(args, clients[i]);
+	}
+	else{
+		if (!clients[i].isRegistered()){
+        	sendMsg(clients[i].getClientFD(), ERR_NOTREGISTERED(clients[i].getNickname()));
+        	return ;
+		}
+		if (this->command == "invite")
+			inviteCommand(args, clients[i]);
+		else if (this->command == "mode")
+			modeCommand(args, clients[i]);
+		else if (this->command == "bot")
+			botCommand(clients[i]);
+		else if (this->command == "join")
+			joinCommand(clients[i]);
+		else if (this->command == "topic")
+			topicCommand(clients[i]);
+		else if (this->command == "kick")
+			kickCommand(clients[i]);
+	} 
+		
 		
 	// std::cout << "----------------------from the server -------------------------------------\n";
     //     std::cout << "------after cmd------\n";
@@ -318,10 +353,10 @@ Channel		&Server::findChannel(std::string chname){//M
 // }
 
 void	Server::clearClientslist(){//M
-	channels.clear();
+	clients.clear();
 }
 void	Server::clearChannelslist(){//M
-	clients.clear();
+	channels.clear();
 }
 
 void	Server::fillSayingsBox(std::string fileName){//M
