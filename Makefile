@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+         #
+#    By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/01 18:16:43 by khanhayf          #+#    #+#              #
-#    Updated: 2024/04/20 16:43:16 by iassafe          ###   ########.fr        #
+#    Updated: 2024/04/23 12:47:03 by khanhayf         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,9 +20,9 @@ OBJS	= $(SRCS:.cpp=.o)
 
 CXX	 = c++
 
-CXXFLAGS = -Wall -Werror -Wextra  -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra  -std=c++98 #-fsanitize=address
 
-%.o: %.cpp Server.hpp Client.hpp Channel.hpp
+%.o: %.cpp Server.hpp Client.hpp Channel.hpp responses.hpp #//M
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 	
 all: $(NAME)

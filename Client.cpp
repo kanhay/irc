@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
+/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:06 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/20 18:28:21 by iassafe          ###   ########.fr       */
+/*   Updated: 2024/04/22 11:32:26 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,12 @@ void Client::registerClient(Server &s){
 }
 
 
-
-
-
 /////////////////IK
 std::string Client::getClientIP() const{
     return (this->clientIP);
+}
+
+void    Client::invite2channel(std::string chName){//M
+    //check if alredy added if not add it
+    invited2channels.push_back(chName);
 }

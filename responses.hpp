@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/20 19:49:29 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:54:55 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,12 @@
 #define ERR_USERONCHANNEL(channel, guest, nick) ":ircserv 443 " + nick + " " + guest + " " + channel + "  :is already on channel\r\n"
 #define RPL_INVITE(nick, username, clienthostname, invited, channel) ":" + nick + "!~" + username + "@" + clienthostname + " INVITE " + invited + " :" + channel + "\r\n"
 #define RPL_ENDOFINVITE(nick) ":ircserv 337 " + nick + " :END of INVITE list\r\n"
-#define RPL_INVITING(nick, invited, channel) ":ircserv 341 " + nick + " Inviting " + invited + " to " + channel + "\r\n"
-#define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is unknown mode char to me\r\n"
-#define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode\r\n"
+#define RPL_INVITING(nick, invited, channel) ":ircserv 341 " + nick + " " + invited + " :" + channel + "\r\n"
+#define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is not a recognised channel mode.\r\n"//M
+#define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode.\r\n"
+#define ERR_INVALIDMODELIMITPARAM(nick, channel, argument) ":ircserv 696 " + nick + " " + channel + " " + argument + " :Invalid limit mode parameter.\r\n"
 #define ERR_USERNOTINCHANNEL(nick, user, channel) ":ircserv 441 " + nick + " " + user + " " + channel + " " + ":they aren't on that channel\r\n"
-
+#define ERR_KEYALREADYSET(nick, channel) ":ircserv 467 " + nick + " " + channel + " " + ":Channel key already set\r\n"//M
 
 
 

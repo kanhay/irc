@@ -51,7 +51,7 @@ class Channel{
         // bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
         bool hasALimit();
-        bool hasAKey();
+        bool getHasKey();//M
 
         void addOperator(Client & c); //Add a client as an operator of the channel
         void removeOperator(Client & c); //Remove a client from operators list

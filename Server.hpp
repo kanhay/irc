@@ -26,7 +26,7 @@ class Channel;
 //TODO : need canonical form for classes
 class	Server{
 	private:
-		int									serverFD; //M (name changed from serverID to severFD)
+		int									serverFD;
 		int									port;
 		static bool							signal;
 		std::string							password;
@@ -35,7 +35,7 @@ class	Server{
 		std::string 						args;
 		std::vector<struct pollfd>			fds;
 		// std::map<std::string, std::string>	map;
-		std::vector<std::string>			sayingsBox;//M
+		std::vector<std::string>			sayingsBox;//
 		std::vector<Client>					clients;
 		std::vector<Channel>				channels;
 
@@ -47,14 +47,14 @@ class	Server{
 		std::vector<std::pair<std::string, std::string> > channelPass;
 	public:
 		Server();
-		~Server();//close users fds before quitting//M
+		~Server();//close users fds before quitting//
 		//--Setters--//
 		void		setPort(int n);
 		void		setPassword(char *str);
 		//--Getters--//
 		int			getPort();
 		std::string	getPassword();
-		int			getServerFD();//M
+		int			getServerFD();//
 		//----//
 		void		create_socket();
 		void		launch_server();
@@ -65,25 +65,25 @@ class	Server{
 		void		closeFD();
 		void		clearClient(int fd);
 
-		void		addChannel(Channel const& channel);//M
-		bool    	isInUseNickname(std::string nickname);//M
-		bool    	isInUseChName(std::string chName);//M
-		void		sendMsg(int clientFd, std::string msg);//M
-		void		handleCommands(int i);//M
-		bool		isRegistered(std::string nickname);//M
-		Client		&findClient(std::string nn);//M
-		Channel		&findChannel(std::string chname);//M
+		void		addChannel(Channel const& channel);//
+		bool    	isInUseNickname(std::string nickname);//
+		bool    	isInUseChName(std::string chName);//
+		void		sendMsg(int clientFd, std::string msg);//
+		void		handleCommands(int i);//
+		bool		isRegistered(std::string nickname);//
+		Client		&findClient(std::string nn);//
+		Channel		&findChannel(std::string chname);//
 
-		void		clearClientslist();//M
-		void		clearChannelslist();//M
+		void		clearClientslist();//
+		void		clearChannelslist();//
 
-		void	fillSayingsBox(std::string fileName);//M
-        void    nickCommand(std::string &args, Client &c);//M
-        void    userCommand(std::string &args, Client &c);//M
-        void    passCommand(std::string &args, Client &c);//M
-        void	inviteCommand(std::string &args, Client &c);//M
-        void    modeCommand(std::string &args, Client &c);//M
-        void    botCommand(Client &c);//M
+		void	fillSayingsBox(std::string fileName);//
+        void    nickCommand(std::string &args, Client &c);//
+        void    userCommand(std::string &args, Client &c);//
+        void    passCommand(std::string &args, Client &c);//
+        void	inviteCommand(std::string &args, Client &c);//
+        void    modeCommand(std::string &args, Client &c);//
+        void    botCommand(Client &c);//
 
 		// ikrame
 		int		argsJoin(void);
@@ -102,11 +102,11 @@ class	Server{
 		void 	whithPassword(void);
 		void	createChannel(Client &c, int i);
 		void	addChannel(Client &c, int i);
+		std::string    tolowercase(std::string str);//M added inside server
 
 };
 
-void    tolowercase(std::string &str);//M
-bool	isValidNickName(std::string nickname);//M
+bool	isValidNickName(std::string nickname);//
 
 
 ///////

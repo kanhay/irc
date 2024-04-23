@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
+/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/20 18:23:24 by iassafe          ###   ########.fr       */
+/*   Updated: 2024/04/21 16:18:10 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ Server::Server(){
 	password = "\0";
 	// nick = "tikchbila";
 	// user = "tiwliwla";
-	fillSayingsBox("sayings.txt");//M
+	fillSayingsBox("sayings.txt");//
 }
 
-Server::~Server(){//M
-	clearClientslist();//do not forget to close clients fd //M
-	clearChannelslist();//M
-}//M
+Server::~Server(){//
+	clearClientslist();//do not forget to close clients fd //
+	clearChannelslist();//
+}//
 
 void	Server::setPort(int n){
 	this->port = n;
@@ -46,9 +46,9 @@ int	Server::getPort(){
 std::string	Server::getPassword(){
 	return (this->password);
 }
-int	Server::getServerFD(){//M
-	return this->serverFD;//M
-}//M
+int	Server::getServerFD(){//
+	return this->serverFD;//
+}//
 
 void	Server::clearClient(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
@@ -71,8 +71,8 @@ void	Server::closeFD(){
 	if (serverFD == -1){//close server socket
 		std::cout << "server disconnected" << std::endl;
 		close(serverFD);}
-	channels.clear();//M
-	clients.clear();//M
+	channels.clear();//
+	clients.clear();//
 }
 
 void		Server::create_socket(){
@@ -148,7 +148,7 @@ std::string	skip_spaces(std::string str){
 		if (str[i] != ' ')
 			return (&str[i]);
 	}
-	// std::cout << "lets see" << str << std::endl;//M
+	// std::cout << "lets see" << str << std::endl;//
 	return (str);
 }
 
@@ -162,7 +162,7 @@ static int validCommand(std::string &cmd){
 }
 //
 
-void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
+void	Server::recieve_data(int fd){
 	char	buffer[1024];
 
 	memset(buffer, 0, sizeof(buffer));
@@ -205,11 +205,11 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 				}
 			}
 			if (validCommand(this->command))
-				handleCommands(fd);//M
+				handleCommands(fd);//
 			else
 				sendMsg(fd, ERR_UNKNOWNCOMMAND(this->clients[j].getNickname(), this->command));
-			command.clear();//M
-			args.clear();//M
+			command.clear();//
+			args.clear();//
 
 		}
 	}
@@ -249,7 +249,7 @@ bool    Server::isInUseNickname(std::string nickname){
     return false;
 }
 
-void	Server::handleCommands(int fd){//M
+void	Server::handleCommands(int fd){//
 	// tolowercase(command);
 	unsigned int i = 0;
 	for (i = 0; i < clients.size(); i++){
@@ -299,11 +299,11 @@ void	Server::handleCommands(int fd){//M
     //     std::cout << "fd = " << clients[i].getClientFD() << "\n";
 }
 
-void    Server::addChannel(Channel const& channel){//M
+void    Server::addChannel(Channel const& channel){//
     channels.push_back(channel);
 }
 
-bool	Server::isRegistered(std::string nickname){//M
+bool	Server::isRegistered(std::string nickname){//
 	for (unsigned int i = 0; i < clients.size(); i++){
         if (clients[i].getNickname() == nickname && clients[i].isRegistered())
             return true;
@@ -311,9 +311,10 @@ bool	Server::isRegistered(std::string nickname){//M
 	return false;
 }
 
-bool    Server::isInUseChName(std::string chName){//M
+bool    Server::isInUseChName(std::string chName){//M chname lowercase before check
+	chName = tolowercase(chName);
     for (unsigned int i = 0; i < channels.size(); i++){
-        if (channels[i].getName() == chName)
+        if (tolowercase(channels[i].getName()) == chName)//M
             return true;
     }
     return false;
@@ -327,7 +328,7 @@ bool    Server::isInUseChName(std::string chName){//M
 //     return false;
 // }
 
-Client		&Server::findClient(std::string nn){//M
+Client		&Server::findClient(std::string nn){//
 	unsigned int i;
 	for (i = 0; i < clients.size(); i++){
 		if (clients[i].getNickname() == nn)
@@ -336,7 +337,7 @@ Client		&Server::findClient(std::string nn){//M
 	return clients[i]; //clients end if not found
 }
 
-Channel		&Server::findChannel(std::string chname){//M
+Channel		&Server::findChannel(std::string chname){//
 	unsigned int i;
 	for (i = 0; i < channels.size(); i++){
 		if (channels[i].getName() == chname)
@@ -352,14 +353,14 @@ Channel		&Server::findChannel(std::string chname){//M
 // 	}
 // }
 
-void	Server::clearClientslist(){//M
+void	Server::clearClientslist(){//
 	clients.clear();
 }
-void	Server::clearChannelslist(){//M
+void	Server::clearChannelslist(){//
 	channels.clear();
 }
 
-void	Server::fillSayingsBox(std::string fileName){//M
+void	Server::fillSayingsBox(std::string fileName){//
 	std::fstream base(fileName);
     if (!base.is_open())
         throw std::runtime_error("Can not open the sayings data base\n");
@@ -367,4 +368,12 @@ void	Server::fillSayingsBox(std::string fileName){//M
     while (std::getline(base, line))
         sayingsBox.push_back(line);
     base.close();
+}
+
+std::string    Server::tolowercase(std::string str){
+	if (!str.empty()){
+    	for (unsigned int i = 0; i < str.size(); i++)
+    	    str[i] = std::tolower(str[i]);
+	}
+	return (str);
 }

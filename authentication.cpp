@@ -6,16 +6,13 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/20 19:35:57 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/21 14:07:45 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void    tolowercase(std::string &str){
-    for (unsigned int i = 0; i < str.size(); i++)
-        str[i] = std::tolower(str[i]);
-}
+//tolowercase deleted from here
 
 bool isValidNickName(std::string nickname){
     if (!nickname.empty()){
@@ -38,11 +35,11 @@ bool isValidNickName(std::string nickname){
 }
 
 void    Server::nickCommand(std::string &args, Client &c){
-    if (args.empty() || !args[0]){
-        sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), "NICK"));
-        return ;
-    }
-    tolowercase(args); //Nicknames are generally case-insensitive
+    // if (args.empty() || !args[0]){
+    //     sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), "NICK"));
+    //     return ;
+    // }
+    args = tolowercase(args); //Nicknames are generally case-insensitive
     std::string param;
     if (args[0] == ':')
         param = args.substr(1); //starting from index 1
@@ -99,7 +96,7 @@ void    Server::passCommand(std::string &args, Client &c){
     if (c.isRegistered()){
         sendMsg(c.getClientFD(), ERR_ALREADYREGISTERED(c.getNickname()));
         return ;}
-    if (!args.empty() && args[0]){
+    // if (!args.empty() && args[0]){
         std::string param;
         if (args[0] == ':')
             param = args.substr(1);
@@ -113,8 +110,8 @@ void    Server::passCommand(std::string &args, Client &c){
             c.setPasswordSended(true);  //leave a mark if pass cmd succeed the first time
             c.registerClient(*this);//client become registred in the server if the condition inside registerClient is true
         }
-    }
-    else
-        sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), "PASS"));
+    // }
+    // else
+    //     sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), "PASS"));
 }
 
