@@ -6,11 +6,9 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:06 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/22 11:32:26 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/27 21:33:07 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 
 #include "Client.hpp"
 
@@ -113,7 +111,6 @@ void Client::registerClient(Server &s){
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :                                                                                      \r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Thank you for using ircserv!\r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  End of message of the day.\r\n");
-        // s.sendMsg(getClientFD(), "You are successfully registered.\n");\r\n"
     }
         std::cout << "------registered successfully------\n";
         std::cout << "nn = " << getNickname() << "\n";
@@ -125,13 +122,48 @@ void Client::registerClient(Server &s){
         std::cout << "registered = " << isRegistered() << "\n";
 }
 
-
 /////////////////IK
 std::string Client::getClientIP() const{
     return (this->clientIP);
 }
 
-void    Client::invite2channel(std::string chName){//M
-    //check if alredy added if not add it
-    invited2channels.push_back(chName);
+std::string    Client::tolowercase(std::string str){
+    if (!str.empty()){
+        for (unsigned int i = 0; i < str.size(); ++i)
+            str[i] = std::tolower(str[i]);
+    }
+    return (str);
+}
+
+bool    Client::isInUseInvitedCh(std::string ChannelName){
+   ChannelName = tolowercase(ChannelName);
+    for (unsigned int i = 0; i < this->invited2channels.size(); ++i){
+        if (tolowercase(this->invited2channels[i]) == ChannelName)//M
+            return true;
+    }
+    return false;
+}
+
+// std::string& Client::findingInvitedCh(std::string ChannelName){
+//     unsigned int i;
+// 	ChannelName = tolowercase(ChannelName);
+// 	for (i = 0; i < this->invited2channels.size(); i++){
+// 		if (tolowercase(this->invited2channels[i]) == ChannelName)
+// 			return (this->invited2channels[i]);
+// 	}
+// 	return (this->invited2channels[i]);//channels end if not found
+// }
+
+void Client::removeInvitedCh(std::string ChannelName){
+    for (unsigned int i = 0; i < this->invited2channels.size(); i++){
+        if (this->invited2channels[i] == ChannelName){
+            this->invited2channels.erase(this->invited2channels.begin() + i);
+            break ;
+        }
+    }
+}
+
+void    Client::invite2channel(std::string chName){//M in case needed to add a new channel to the invited2channels list
+    if (!isInUseInvitedCh(chName))
+        invited2channels.push_back(chName);
 }

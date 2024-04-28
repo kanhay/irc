@@ -50,7 +50,7 @@ class Channel{
         int getlimit() const;
         // bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
-        bool hasALimit();
+        bool getHasLimit();//M
         bool getHasKey();//M
 
         void addOperator(Client & c); //Add a client as an operator of the channel
@@ -67,9 +67,10 @@ class Channel{
         bool isMember(Client const& c); //the client is member if it is an operator or a regular user
         // bool isfull(); // true if operators.size() + regularUsers.size() == limit
 
-
+        void channelStatusMsg(Server &s, std::string modestring, std::string newOp);//M
 
         ///////ik
         void sendMsg2Members(Server &s, Client &c);
+
 };
 #endif

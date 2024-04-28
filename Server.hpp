@@ -18,7 +18,7 @@
 #include <sstream>
 #include <map>
 #include <fstream>
-
+#include <cctype> //M toupper
 #include "responses.hpp"
 
 class Client;
@@ -26,7 +26,7 @@ class Channel;
 //TODO : need canonical form for classes
 class	Server{
 	private:
-		int									serverFD;
+		int									serverFD; //M (name changed from serverID to severFD)
 		int									port;
 		static bool							signal;
 		std::string							password;
@@ -35,7 +35,7 @@ class	Server{
 		std::string 						args;
 		std::vector<struct pollfd>			fds;
 		// std::map<std::string, std::string>	map;
-		std::vector<std::string>			sayingsBox;//
+		std::vector<std::string>			sayingsBox;//M
 		std::vector<Client>					clients;
 		std::vector<Channel>				channels;
 
@@ -45,16 +45,22 @@ class	Server{
 		std::vector<std::string> joinChannel;
 		std::vector<std::string> joinPassword;
 		std::vector<std::pair<std::string, std::string> > channelPass;
+		std::string ChannelTopic;
+		std::string topic;
+		std::string Channelkick;
+		std::vector<std::string> ClientsKick;
+
 	public:
 		Server();
-		~Server();//close users fds before quitting//
+		~Server();//close users fds before quitting//M
 		//--Setters--//
 		void		setPort(int n);
 		void		setPassword(char *str);
 		//--Getters--//
 		int			getPort();
 		std::string	getPassword();
-		int			getServerFD();//
+		int			getServerFD();//M
+		std::string getCommand(); //M
 		//----//
 		void		create_socket();
 		void		launch_server();
@@ -65,36 +71,37 @@ class	Server{
 		void		closeFD();
 		void		clearClient(int fd);
 
-		void		addChannel(Channel const& channel);//
-		bool    	isInUseNickname(std::string nickname);//
-		bool    	isInUseChName(std::string chName);//
-		void		sendMsg(int clientFd, std::string msg);//
-		void		handleCommands(int i);//
-		bool		isRegistered(std::string nickname);//
-		Client		&findClient(std::string nn);//
-		Channel		&findChannel(std::string chname);//
+		void		addChannel(Channel const& channel);//M
+		bool    	isInUseNickname(std::string nickname);//M
+		bool    	isInUseChName(std::string chName);//M
+		void		sendMsg(int clientFd, std::string msg);//M
+		void		handleCommands(Client &c);//M
+		bool		isRegistered(std::string nickname);//M
+		Client		&findClient(std::string nn);//M
+		Channel		&findChannel(std::string chname);//M
 
-		void		clearClientslist();//
-		void		clearChannelslist();//
+		void		clearClientslist();//M
+		void		clearChannelslist();//M
 
-		void	fillSayingsBox(std::string fileName);//
-        void    nickCommand(std::string &args, Client &c);//
-        void    userCommand(std::string &args, Client &c);//
-        void    passCommand(std::string &args, Client &c);//
-        void	inviteCommand(std::string &args, Client &c);//
-        void    modeCommand(std::string &args, Client &c);//
-        void    botCommand(Client &c);//
+		void	fillSayingsBox(std::string fileName);//M
+        void    nickCommand(std::string &args, Client &c);//M
+        void    userCommand(std::string &args, Client &c);//M
+        void    passCommand(std::string &args, Client &c);//M
+        void	inviteCommand(std::string &args, Client &c);//M
+        void    modeCommand(std::string &args, Client &c);//M
+        void    botCommand(Client &c);//M
 
 		// ikrame
+		void	checkCommands(int fd);
 		int		argsJoin(void);
 		void	joinCommand(Client &c);
 		void	execJoinCommand(Client &c);
 		int		validArgsTopic(void);
 		int		validArgsKick(void);
 		void	topicCommand(Client &c);
-		void	execTopicCommand(void);
+		void	execTopicCommand(Client &c);
 		void	kickCommand(Client &c);
-		void	execKickCommand(void);
+		void	execKickCommand(Client &c);
 		int 	joinSingleChannel(void);
 		void	joinMultiChannels(void);
 
@@ -102,11 +109,13 @@ class	Server{
 		void 	whithPassword(void);
 		void	createChannel(Client &c, int i);
 		void	addChannel(Client &c, int i);
-		std::string    tolowercase(std::string str);//M added inside server
+		void 	makeClientKick(std::string clKick, int exist2Points);
+
+		std::string    tolowercase(std::string str);
+		bool	isValidNickName(std::string nickname);//M
 
 };
 
-bool	isValidNickName(std::string nickname);//
 
 
 ///////

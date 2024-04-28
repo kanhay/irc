@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/21 16:18:10 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/27 21:54:29 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,24 @@
 #include "Server.hpp"
 
 bool	Server::signal = false;
+
+std::string    Server::tolowercase(std::string str){
+    if (!str.empty()){
+        for (unsigned int i = 0; i < str.size(); ++i)
+            str[i] = std::tolower(str[i]);
+    }
+    return (str);
+}
+
+bool    Server::isInUseChName(std::string chName){//M chname lowercase before check
+   chName = tolowercase(chName);
+    for (unsigned int i = 0; i < channels.size(); ++i){
+        if (tolowercase(channels[i].getName()) == chName)//M
+            return true;
+    }
+    return false;
+}
+
 
 void	Server::sigHandler(int signum){
 	(void)signum;
@@ -25,13 +43,13 @@ Server::Server(){
 	password = "\0";
 	// nick = "tikchbila";
 	// user = "tiwliwla";
-	fillSayingsBox("sayings.txt");//
+	fillSayingsBox("sayings.txt");//M
 }
 
-Server::~Server(){//
-	clearClientslist();//do not forget to close clients fd //
-	clearChannelslist();//
-}//
+Server::~Server(){//M
+	clearClientslist();//do not forget to close clients fd //M
+	clearChannelslist();//M
+}//M
 
 void	Server::setPort(int n){
 	this->port = n;
@@ -46,9 +64,13 @@ int	Server::getPort(){
 std::string	Server::getPassword(){
 	return (this->password);
 }
-int	Server::getServerFD(){//
-	return this->serverFD;//
-}//
+int	Server::getServerFD(){//M
+	return this->serverFD;//M
+}//M
+
+std::string Server::getCommand(){ //M
+	return command;
+}
 
 void	Server::clearClient(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
@@ -71,8 +93,9 @@ void	Server::closeFD(){
 	if (serverFD == -1){//close server socket
 		std::cout << "server disconnected" << std::endl;
 		close(serverFD);}
-	channels.clear();//
-	clients.clear();//
+	this->channels.clear();
+	this->clients.clear();
+	this->sayingsBox.clear();//M
 }
 
 void		Server::create_socket(){
@@ -138,31 +161,9 @@ void	Server::acceptClient(){
 	std::cout << "accepted!" << std::endl;
 }
 
-void	to_lower(std::string &command){
-	for (size_t i = 0; i < command.size(); ++i){
-		command[i] = std::tolower(command[i]);
-	}
-}
-std::string	skip_spaces(std::string str){
-	for (size_t i = 0; i < str.size(); ++i){
-		if (str[i] != ' ')
-			return (&str[i]);
-	}
-	// std::cout << "lets see" << str << std::endl;//
-	return (str);
-}
 
-//
-static int validCommand(std::string &cmd){
-    if (cmd == "join" || cmd == "privmsg" || cmd == "topic" \
-        || cmd == "kick" || cmd == "mode" || cmd == "pass" || \
-        cmd == "user" || cmd == "invite" || cmd == "bot" || cmd == "nick")
-        return(1);
-    return(0);
-}
-//
 
-void	Server::recieve_data(int fd){
+void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	char	buffer[1024];
 
 	memset(buffer, 0, sizeof(buffer));
@@ -175,7 +176,7 @@ void	Server::recieve_data(int fd){
 	else{
 		std::string	buf = buffer;
 		 size_t fond;
-		std::string	new_buf = skip_spaces(buf);
+		std::string	new_buf = skipSpaces(buf);
 		for(size_t i = 0; i <= new_buf.size(); i++){
 			fond = new_buf.find_first_of("\n");
 			if (fond == std::string::npos)
@@ -197,19 +198,9 @@ void	Server::recieve_data(int fd){
 				this->args = '\0';
 			}
 			new_buf = new_buf.substr(fond+1, new_buf.size());
-			to_lower(this->command);
-			unsigned int j = 0;
-			for (j = 0; j < this->clients.size(); j++){
-				if (clients[j].getClientFD() == fd){
-					break ;
-				}
-			}
-			if (validCommand(this->command))
-				handleCommands(fd);//
-			else
-				sendMsg(fd, ERR_UNKNOWNCOMMAND(this->clients[j].getNickname(), this->command));
-			command.clear();//
-			args.clear();//
+			checkCommands(fd);//M
+			command.clear();
+			args.clear();
 
 		}
 	}
@@ -242,49 +233,17 @@ void	Server::sendMsg(int fd, std::string msg){
 }
 
 bool    Server::isInUseNickname(std::string nickname){
+	nickname = tolowercase(nickname);
     for (unsigned int i = 0; i < clients.size(); i++){
-        if (clients[i].getNickname() == nickname)
+		std::string cltnick;
+		cltnick = tolowercase(clients[i].getNickname());
+        if (cltnick == nickname)
             return true;
     }
     return false;
 }
 
-void	Server::handleCommands(int fd){//
-	// tolowercase(command);
-	unsigned int i = 0;
-	for (i = 0; i < clients.size(); i++){
-		if (clients[i].getClientFD() == fd){
-			break ;
-		}	
-	}
-	if (i == clients.size()) //this is not part of the implementation just in case this happens
-		std::cout << "Client no found in container\n";
-	if (this->command == "user" || this->command == "nick" || this->command == "pass"){
-		if (this->command == "user")
-			userCommand(args, this->clients[i]);
-		else if (this->command == "nick")
-			nickCommand(args, clients[i]);
-		else if (this->command == "pass")
-			passCommand(args, clients[i]);
-	}
-	else{
-		if (!clients[i].isRegistered()){
-        	sendMsg(clients[i].getClientFD(), ERR_NOTREGISTERED(clients[i].getNickname()));
-        	return ;
-		}
-		if (this->command == "invite")
-			inviteCommand(args, clients[i]);
-		else if (this->command == "mode")
-			modeCommand(args, clients[i]);
-		else if (this->command == "bot")
-			botCommand(clients[i]);
-		else if (this->command == "join")
-			joinCommand(clients[i]);
-		else if (this->command == "topic")
-			topicCommand(clients[i]);
-		else if (this->command == "kick")
-			kickCommand(clients[i]);
-	} 
+
 		
 		
 	// std::cout << "----------------------from the server -------------------------------------\n";
@@ -297,13 +256,12 @@ void	Server::handleCommands(int fd){//
     //     std::cout << "pw = " << clients[i].isPasswordSended() << "\n";
     //     std::cout << "registered = " << clients[i].isRegistered() << "\n";
     //     std::cout << "fd = " << clients[i].getClientFD() << "\n";
-}
 
-void    Server::addChannel(Channel const& channel){//
+void    Server::addChannel(Channel const& channel){//M
     channels.push_back(channel);
 }
 
-bool	Server::isRegistered(std::string nickname){//
+bool	Server::isRegistered(std::string nickname){//M
 	for (unsigned int i = 0; i < clients.size(); i++){
         if (clients[i].getNickname() == nickname && clients[i].isRegistered())
             return true;
@@ -311,14 +269,13 @@ bool	Server::isRegistered(std::string nickname){//
 	return false;
 }
 
-bool    Server::isInUseChName(std::string chName){//M chname lowercase before check
-	chName = tolowercase(chName);
-    for (unsigned int i = 0; i < channels.size(); i++){
-        if (tolowercase(channels[i].getName()) == chName)//M
-            return true;
-    }
-    return false;
-}
+// bool    Server::isInUseChName(std::string chName){//M
+//     for (unsigned int i = 0; i < channels.size(); i++){
+//         if (channels[i].getName() == chName)
+//             return true;
+//     }
+//     return false;
+// }
 
 // bool 	Server::isMember(Client &c, Channel &ch){
 // 	for (unsigned int i = 0; i < channels.size(); i++){
@@ -328,8 +285,9 @@ bool    Server::isInUseChName(std::string chName){//M chname lowercase before ch
 //     return false;
 // }
 
-Client		&Server::findClient(std::string nn){//
+Client		&Server::findClient(std::string nn){//M
 	unsigned int i;
+	nn = tolowercase(nn);
 	for (i = 0; i < clients.size(); i++){
 		if (clients[i].getNickname() == nn)
 			return (clients[i]);
@@ -337,10 +295,11 @@ Client		&Server::findClient(std::string nn){//
 	return clients[i]; //clients end if not found
 }
 
-Channel		&Server::findChannel(std::string chname){//
+Channel		&Server::findChannel(std::string chname){//M
 	unsigned int i;
+	chname = tolowercase(chname);
 	for (i = 0; i < channels.size(); i++){
-		if (channels[i].getName() == chname)
+		if (tolowercase(channels[i].getName()) == chname)
 			return (channels[i]);
 	}
 	return channels[i];//channels end if not found
@@ -353,12 +312,20 @@ Channel		&Server::findChannel(std::string chname){//
 // 	}
 // }
 
-void	Server::clearClientslist(){//
+void	Server::clearClientslist(){//M
 	clients.clear();
 }
-void	Server::clearChannelslist(){//
+void	Server::clearChannelslist(){//M
 	channels.clear();
 }
+/* // Convert std::string to const char*
+    if (!base.is_open())
+        throw std::runtime_error("Can not open the sayings data base\n");
+    std::string line;
+    while (std::getline(base, line))
+        sayingsBox.push_back(line);
+    base.close();
+}*/
 
 void	Server::fillSayingsBox(std::string fileName){//
 	std::fstream base(fileName);
@@ -368,12 +335,4 @@ void	Server::fillSayingsBox(std::string fileName){//
     while (std::getline(base, line))
         sayingsBox.push_back(line);
     base.close();
-}
-
-std::string    Server::tolowercase(std::string str){
-	if (!str.empty()){
-    	for (unsigned int i = 0; i < str.size(); i++)
-    	    str[i] = std::tolower(str[i]);
-	}
-	return (str);
 }

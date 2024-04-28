@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:33:00 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/23 18:14:46 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/28 11:42:31 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void    Server::modeCommand(std::string &args, Client &c){
                     sign = modestring[i++];
                 if (!channel.isOperator(c)){
                     std::string m = "";
-                    sendMsg(c.getClientFD(), ERR_NOTOP(c.getNickname(), chan, (m += modestring[i])));
+                    sendMsg(c.getClientFD(), ERR_NOTOPMODES(c.getNickname(), chan, (m += modestring[i])));
                     return ;
                 }
                 if (modestring[i] == 'k'){
@@ -73,6 +73,7 @@ void    Server::modeCommand(std::string &args, Client &c){
                                 channel.setKey(key);
                                 channel.setHasKey(true);
                                 std::cout << "key-->" << channel.getKey() << "--\n";
+                                // channel.channelStatusMsg(*this, modestring, "");
                                 if (modestring[i + 1] == '\0')
                                     return;
                             }
@@ -84,7 +85,7 @@ void    Server::modeCommand(std::string &args, Client &c){
                                 std::cout << "key-->" << channel.getKey() << "--\n";
                             }
                             else
-                                sendMsg(c.getClientFD(), ERR_KEYALREADYSET(c.getNickname(), chan));
+                                sendMsg(c.getClientFD(), ERR_KEYALREADYSET(c.getNickname(), chan)); 
                             std::cout << "key-->" << channel.getKey() << "--\n";
                             if (modestring[i + 1] == '\0')
                             return ;
@@ -212,7 +213,7 @@ void    Server::modeCommand(std::string &args, Client &c){
             else{
                 if (!channel.isOperator(c)){
                     std::string m = "";
-                    sendMsg(c.getClientFD(), ERR_NOTOP(c.getNickname(), chan, (m += modestring[i])));
+                    sendMsg(c.getClientFD(), ERR_NOTOPMODES(c.getNickname(), chan, (m += modestring[i])));
                     continue ;
                 }
                 if (modestring[i] == 'i'){
