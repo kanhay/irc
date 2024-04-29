@@ -52,7 +52,7 @@ std::string Channel::getMode() const{
 std::string Channel::getKey() const{
     return this->key;
 }
-int Channel::getlimit() const{
+int Channel::getLimit() const{
     return this->limit;
 }
 // bool Channel::isModelocked() const{
@@ -156,30 +156,92 @@ void Channel::sendMsg2Members(Server &s, Client &c){
     }
 }
 
-void Channel::channelStatusMsg(Server &s,std::string modestring, std::string newOp){//M
+//AZMARA
+void	Channel::sendmsg2chanRegulars(Server S, std::string message){
+	for (size_t i = 0; i < this->regularUsers.size(); ++i){
+		S.sendMsg(regularUsers[i].getClientFD(), message);
+		S.sendMsg(regularUsers[i].getClientFD(), "\n");
+	}
+}
+void	Channel::sendmsg2chanOperators(Server S, std::string message){
+	for (size_t i = 0; i < this->operators.size(); ++i){
+		S.sendMsg(operators[i].getClientFD(), message);
+		S.sendMsg(operators[i].getClientFD(), "\n");
+	}
+}
+
+
+////////UPPPPPPPP
+bool Channel::hasLimitCantJ(void){
+    if((this->operators.size() + this->regularUsers.size()) >= this->limit)
+        return (true);
+    return (false);
+}
+
+std::string Channel::makeStringMember(void){
+	std::string member;
+	for(size_t i = 0; i < this->operators.size(); ++i){
+		if (i != 0)
+			member += " ";
+		member += "@" + this->operators[i].getNickname();
+	}
+	for(size_t i = 0; i < this->regularUsers.size(); ++i){
+		member += " " + this->regularUsers[i].getNickname();
+	}
+	return (member);
+}
+
+void Channel::channelStatusMsg(Server &s,std::string modestring, std::string newOp){
     std::string str = "";
+    std::string sign;
+    if (modestring.find_first_of("+-") == std::string::npos)
+        sign = "+";
     for (unsigned int i = 0; i < modestring.size(); i++){
-        if (this->getHasKey())
-            str += 'k';
-        if (this->getHasLimit())
-            str += 'l';
-        if (this->getMode() == "invite-only")
-            str += 'i';
-        if (this->getHasKey())
-            str += ' ' + this->getKey();
-        if (this->getHasLimit())
-            str += ' ' + this->getlimit();
-        if (!newOp.empty())
-            str += " :" + newOp;
-        for(unsigned int i = 0; i < this->regularUsers.size(); ++i){
-            std::string msg = ":" + this->regularUsers[i].getNickname() + "!~" + this->regularUsers[i].getUsername() + " " + s.getCommand() + this->getName() + " " + modestring + str + "\n";
-            s.sendMsg(this->regularUsers[i].getClientFD(), msg);
-        }
-        for(unsigned int i = 0; i < this->operators.size(); ++i){
-            std::string msg = ":" + this->operators[i].getNickname() + "!~" + this->operators[i].getUsername() + " " + s.getCommand() + this->getName() + " " + modestring + str + "\n";
-            s.sendMsg(this->operators[i].getClientFD(), msg);
-        }
+        if (modestring[i] == 'k' && this->getHasKey()){
+            str += " ";
+            str += this->getKey();}
+        else if (modestring[i] == 'l' && this->getHasLimit()){
+            std::cout << "limit ==" << getLimit() << "\n";
+            str += " ";
+            std::stringstream ss;
+            ss << this->getLimit();
+            str += ss.str();}
+        else if (modestring[i] == 'o' && !newOp.empty()){
+            str += " ";
+            str += newOp;}
+    }
+    for(unsigned int i = 0; i < this->regularUsers.size(); ++i){
+        std::string msg = ":" + this->regularUsers[i].getNickname() + "!~" + this->regularUsers[i].getUsername() + " " + s.getCommand() + " " + this->getName() + " " + sign + modestring + str + "\n";
+        s.sendMsg(this->regularUsers[i].getClientFD(), msg);
+    }
+    for(unsigned int i = 0; i < this->operators.size(); ++i){
+        std::string msg = ":" + this->operators[i].getNickname() + "!~" + this->operators[i].getUsername() + " " + s.getCommand()+ " " + this->getName() + " " + sign + modestring + str + "\n";
+        s.sendMsg(this->operators[i].getClientFD(), msg);
     }
 }
-//         mode #ww klito 77 5 jj
-// :tt!~t@freenode-obu.d75.6g0qj4.IP MODE #ww +klio 77 5 :jj
+
+std::string Channel::channelModes(){
+    std::string str = "";
+    if (this->getHasKey())
+        str += "k";
+    if (this->getHasLimit())
+        str += "l";
+    if (getMode() == "invite-only")
+        str += "i";
+    if (!str.empty()){
+        for (unsigned int i = 0; str[i] != ' '; i++){
+            if (str[i] == 'k'){
+                str += " ";
+                str += getKey();
+            }
+            else if (str[i] == 'l'){
+                str += " ";
+                std::stringstream ss;
+                ss << this->getLimit();
+                str += ss.str();
+            }
+        }
+    }
+    std::cout << "str==" << str << "\n";
+    return (str);
+}

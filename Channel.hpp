@@ -47,11 +47,11 @@ class Channel{
         std::string getTopic() const;
         std::string getMode() const; // return mode
         std::string getKey() const;
-        int getlimit() const;
+        int getLimit() const;
         // bool isModelocked() const; // return modeLock
         bool isTopiclocked() const; // return topicLock
-        bool getHasLimit();//M
-        bool getHasKey();//M
+        bool getHasLimit();
+        bool getHasKey();
 
         void addOperator(Client & c); //Add a client as an operator of the channel
         void removeOperator(Client & c); //Remove a client from operators list
@@ -67,10 +67,19 @@ class Channel{
         bool isMember(Client const& c); //the client is member if it is an operator or a regular user
         // bool isfull(); // true if operators.size() + regularUsers.size() == limit
 
-        void channelStatusMsg(Server &s, std::string modestring, std::string newOp);//M
 
         ///////ik
         void sendMsg2Members(Server &s, Client &c);
+         //AZMARA
+        void	sendmsg2chanRegulars(Server S, std::string message);//NEW
+		void	sendmsg2chanOperators(Server S, std::string message);//NEW
+
+        void channelStatusMsg(Server &s, std::string modestring, std::string newOp);//M
+        std::string channelModes();//M
+
+        ////////UPPPPPPPP
+        bool hasLimitCantJ(void);
+        std::string makeStringMember(void);
 
 };
 #endif

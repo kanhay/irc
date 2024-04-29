@@ -23,25 +23,23 @@ int	main(int ac, char **av){
 			std::cerr << "Enter a port and a password" << std::endl;
 			return (1);
 		}
-		serv.setPort(strtol(av[1], NULL, 10));
-		std::string password = av[2];
+		//AZMARA
+		std::string	password = av[2];
 		if (password.find_first_of(" \t") != std::string::npos)
-			throw(std::runtime_error("White spaces are not accepted."));
+			throw(std::runtime_error("NO WHITE SPACES ALLOWED!"));
+		serv.setPort(strtol(av[1], NULL, 10));
 		serv.setPassword(av[2]);
 		por = serv.getPort();
 		std::string	s = av[1];
 		if (s.find_first_not_of("0123456789") != std::string::npos){
-			std::cerr << "Only numbers in port!" << std::endl;
-			return (1);
+			throw(std::runtime_error("Only numbers in port!"));//AZMARA
 		}
 		pas = serv.getPassword();
 		if (por < 1024 || por > 49151){
-			std::cerr << "Enter a valid port" << std::endl;
-			return (1);
+			throw(std::runtime_error("Enter a valid port"));//AZMARA
 		}
 		if (pas.size() <= 0){
-			std::cout << "Empty Password!" << std::endl;
-			return (1);
+			throw(std::runtime_error("Empty Password!"));//AZMARA
 		}
 		signal(SIGINT, Server::sigHandler);
 		signal(SIGQUIT, Server::sigHandler);

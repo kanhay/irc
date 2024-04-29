@@ -14,11 +14,31 @@ static int validCommand(std::string &cmd){
     return(0);
 }
 
+void Server::handleError(Client &c){
+    if (this->command == "USER")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<username> <unused> <unused> :<realname>"));
+	else if (this->command == "NICK")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<newnick>"));
+	else if (this->command == "PASS")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<password>"));
+	else if (this->command == "MODE")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<target> [[(+|-)]<modes> [<mode-parameters>]]"));
+	else if (this->command == "JOIN")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<channel>[,<channel>]+ [<key>[,<key>]+]"));
+	else if (this->command == "TOPIC")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<channel> [:<topic>]"));
+	else if (this->command == "KICK")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<channel> <nick>[,<nick>]+ [:<reason>]"));
+    else if(this->command == "PRIVMSG")
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<target>[,<target>]+ :<message>"));
+}
+
 void	Server::handleCommands(Client &c){
 	this->args = skipSpaces(this->args);
-	if(this->args.empty() && this->command != "BOT"){ //M add command != "BOT" if bot is command because bot don't need to have parameters
-	
+	if(this->args.empty() && this->command != "BOT" && this->command != "INVITE"){//M
 		sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), this->command));
+		if (c.isRegistered())
+			handleError(c);
 		return ;
 	}
 	if (this->command == "USER" || this->command == "NICK" || this->command == "PASS"){
@@ -31,7 +51,7 @@ void	Server::handleCommands(Client &c){
 	}
 	else{
 		if (!c.isRegistered()){
-        	sendMsg(c.getClientFD(), ERR_NOTREGISTERED(c.getNickname()));
+        	sendMsg(c.getClientFD(), ERR_NOTREGISTERED(this->command));
         	return ;
 		}
 		if (this->command == "INVITE")
@@ -46,6 +66,8 @@ void	Server::handleCommands(Client &c){
 			topicCommand(c);
 		else if (this->command == "KICK")
 			kickCommand(c);
+		else if (this->command == "PRIVMSG")
+			privmsgCommand(args, c);
 	} 
 }
 
@@ -58,10 +80,10 @@ void Server::checkCommands(int fd){
 		}
 	}
 	if (i == clients.size()) //this is not part of the implementation just in case this happens 
-		throw(std::runtime_error("Client no found in the server container\n")); //M
+		throw(std::runtime_error("Client no found in the server container\n")); 
 	if (validCommand(this->command))
 		handleCommands(this->clients[i]);
-	else if (this->command != "" && this->clients[i].isRegistered()) //M else without conditons is enough
+	else if (this->command != "" && this->clients[i].isRegistered()) // else without conditons is enough
 		sendMsg(fd, ERR_UNKNOWNCOMMAND(this->clients[i].getNickname(), this->command));
 }
 

@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/26 16:25:47 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/29 15:48:47 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #define ERR_NICKNAMEINUSE(nick) ":ircserv 433 " + nick + " :Nickname is already in use!\r\n"
 // #define ERR_NONICKNAMEGIVEN(nick) ":ircserv 431 " + nick + " :No nickname given!\r\n"
 #define ERR_ERRONEUSNICKNAME(nick) ":ircserv 432 " + nick + " :Erroneus nickname!\r\n"
-#define ERR_NOTREGISTERED(nick) ":ircserv 451 " + nick + " :You have not registered !\r\n"
+#define ERR_NOTREGISTERED(cmd) ":ircserv 451 * " + cmd + " :You have not registered.\r\n" /////////UPPPPPPPPP
 #define ERR_NOSUCHCHANNEL(channel, nick) ":ircserv 403 " + nick + " " + channel + " :No such channel\r\n"
 #define ERR_NOSUCHNICK(nick, argument) ":ircserv 401 " + nick + " " + argument + " :No such nick\r\n" 
 #define ERR_NOTONCHANNEL(nick, channel) ":ircserv 442 " + channel + " " + ":You're not on that channel\r\n"
@@ -31,19 +31,23 @@
 #define RPL_INVITE(nick, username, clienthostname, invited, channel) ":" + nick + "!~" + username + "@" + clienthostname + " INVITE " + invited + " :" + channel + "\r\n"
 #define RPL_ENDOFINVITE(nick) ":ircserv 337 " + nick + " :END of INVITE list\r\n"
 #define RPL_INVITING(nick, invited, channel) ":ircserv 341 " + nick + " " + invited + " :" + channel + "\r\n"
-#define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is not a recognised channel mode.\r\n"//M
+#define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is not a recognised channel mode.\r\n"
 #define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode.\r\n"
 #define ERR_INVALIDMODELIMITPARAM(nick, channel, argument) ":ircserv 696 " + nick + " " + channel + " " + argument + " :Invalid limit mode parameter.\r\n"
 #define ERR_USERNOTINCHANNEL(nick, user, channel) ":ircserv 441 " + nick + " " + user + " " + channel + " " + ":they aren't on that channel\r\n"
-#define ERR_KEYALREADYSET(nick, channel) ":ircserv 467 " + nick + " " + channel + " " + ":Channel key already set\r\n"//M
+#define ERR_KEYALREADYSET(nick, channel) ":ircserv 467 " + nick + " " + channel + " " + ":Channel key already set\r\n"
 #define ERR_NOACCCHTOPIC(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You do not have access to change the topic on this channel\r\n" ///////
 #define ERR_CANNOTKICK(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You must be a channel half-operator\r\n" ///////
+#define RPL_CHANNELMODES(channelName, nick, channelmode) ":ircserv 324 " + nick + " " + channelName + " +" + channelmode + "\r\n"//M
 
 
 #define RPL_YOURHOST(nick) ":" + "ircserv" + " 002 " + nick + " :Your host is " + "ircserv" + " running version 1.0 !\r\n"
 #define RPL_CREATED(nick) ":" + "ircserv" + " 003 " + nick + " :This server was created 2023-9-15 !\r\n"
 #define RPL_MYINFO(nick) ":" + "ircserv" + " 004 " + nick + " :Host: " + "ircserv" + ", Version: 1.0, User mode: none, Channel modes: o, t, k, i !\r\n"
 
+//AZMARA
+#define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given (PRIVMSG)\r\n"
+#define ERR_NO_TEXT(nick) "ircserv 412 " + nick + " " + ":No text to send\r\n"
 
 #define RPL_NICKCHANGE(oldNick, nick) ":" + oldNick + " NICK " + nick + "\r\n"
 
@@ -63,7 +67,7 @@
 #define RPL_MODEISOP(channel, mode, target) ":" + "ircserv" + " MODE " + channel + " " + mode + " " + target + "\r\n"
 
 #define RPL_CREATIONTIME(hostname, channelName, nick, time) ":" + "ircserv" + " 329 " + nick + " " + channelName + " " + time + "\r\n"
-#define RPL_CHANNELMODES(hostname, channelName, nick, channelmode) ":" + "ircserv" + " 324 " + nick + " " + channelName + " " + channelmode + "\r\n"
+
 
 
 #define ERR_INPUTTOOLONG(nick) ":" + "ircserv" + " 417 " + nick + " :Input line was too long !\r\n"
@@ -85,10 +89,11 @@
 
 ///////////
 #define RPL_JOIN(nick, username, channelname, ipaddress) ":" + nick + "!~" + username + "@" + ipaddress + " JOIN :" + channelname + "\r\n"
-#define RPL_NAMREPLY(clients, channelname, nick) ":ircserv 353 " + nick + " = " + channelname + " :@" + clients + "\r\n"
+#define RPL_NAMREPLY(clients, channelname, nick) ":ircserv 353 " + nick + " = " + channelname + " :" + clients + "\r\n"
 #define RPL_ENDOFNAMES(hostname, nick, channelname) ":ircserv 366 " + nick + " " + channelname + " :END of /NAMES list\r\n"
 #define ERR_UNKNOWNCOMMAND(nick, command) (":ircserv 421 " + nick + " " + command + " :Unknown command\r\n")
 #define ERR_BADCHANNELKEY(nick, channelName) ":ircserv 475 " + nick + " " + channelName + " :Cannot join channel (+K) - bad key\r\n"
 #define ERR_NOTOPIC(channel, nick) ":ircserv 331 " + nick + " " + channel + " :No topic is set.\r\n"
+#define ERR_USAGE(nick, command, msg) ":ircserv 650 " + nick + " " + command + " :" + msg + "\r\n"
 
 #endif
