@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/30 21:32:24 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/01 14:49:26 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,15 @@ void    Server::nickCommand(std::string &args, Client &c){
         sendMsg(c.getClientFD(), msg);
         sendNickMsg2Mem(msg, c);//M
     }
-    c.setNickname(param);
-    if (!c.isRegistered()){
-        c.registerClient(*this);
-        // if (c.isRegistered()){
-        //     for (unsigned int i = 0;  i < clients.size(); i++){
-        //         if ((tolowercase(clients[i].getNickname()) == tolowercase(param)) && clients[i].isRegistered())
-        //             clients[i].setNickname("");
-        //     }
-        // }
+    if (c.isRegistered()){
+        for (unsigned int i = 0; i < channels.size(); i++){
+		    if (channels[i].isMember(c))
+                channels[i].updateAmemNickName(c, param);
+        }
     }
+    c.setNickname(param);
+    if (!c.isRegistered())
+        c.registerClient(*this);
 }
 
 void    Server::userCommand(std::string &args, Client &c){

@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/30 21:31:59 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/01 14:35:05 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,3 +345,4 @@ void Server::sendNickMsg2Mem(std::string msg, Client c){//M new
 		}
 	}
 }
+

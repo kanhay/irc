@@ -82,6 +82,7 @@ class Channel{
         bool hasLimitCantJ(void);
         std::string makeStringMember(void);
 
+        void	updateAmemNickName(Client c, std::string newNick);//M new
 
 
 };

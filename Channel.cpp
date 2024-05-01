@@ -256,3 +256,14 @@ std::string Channel::channelModes(){
     std::cout << "str==" << str << "\n";
     return (str);
 }
+
+void	Channel::updateAmemNickName(Client c, std::string newNick){//M new
+    for (unsigned int i = 0; i < operators.size(); i++){
+        if (operators[i].getNickname() == c.getNickname())
+            operators[i].setNickname (newNick);
+    }
+    for (unsigned int i = 0; i < regularUsers.size(); i++){
+        if (regularUsers[i].getNickname() == c.getNickname())
+            regularUsers[i].setNickname (newNick);
+    }
+}

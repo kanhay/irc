@@ -127,6 +127,7 @@ class	Server{
 		void handleError(Client &c);
 		void sendNickMsg2Mem(std::string msg, Client c);//M NEW
 
+
 		
 };
 
