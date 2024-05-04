@@ -4,7 +4,7 @@ void Server::createChannel(Client &c, int i){
 	Channel newChannel(c, this->channelPass[i].first, *this);
 	newChannel.addOperator(c);
 	sendMsg(c.getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), newChannel.getName(), c.getClientIP()));
-	sendMsg(c.getClientFD(), RPL_NAMREPLY(c.getNickname(), newChannel.getName(),c.getNickname()));
+	sendMsg(c.getClientFD(), RPL_NAMREPLY(("@" + c.getNickname()), newChannel.getName(),c.getNickname()));
 	sendMsg(c.getClientFD(), RPL_ENDOFNAMES(c.getHostname(), c.getNickname(), newChannel.getName()));
 }
 
@@ -24,8 +24,8 @@ void Server::addChannel(Client& c, int i){
 	}
 	else{
 		if(findingChannel.getHasLimit()){
-			if(findingChannel.hasLimitCantJ()){
-				sendMsg(c.getClientFD(), ERR_BADCHANNELKEY(c.getNickname(), findingChannel.getName()));
+			if(!findingChannel.hasLimitCanJ()){
+				sendMsg(c.getClientFD(), ERR_CHANNELISFULL(c.getNickname(), findingChannel.getName()));
 				return ;
 			}
 		}
@@ -49,7 +49,7 @@ void Server::addChannel(Client& c, int i){
 				findingChannel.sendMsg2Members(*this, c);
 			}
 		}
-		else
+		else if (!findingChannel.isMember(c))
 			sendMsg(c.getClientFD(), ERR_BADCHANNELKEY(c.getNickname(), findingChannel.getName()));
 	}
 }

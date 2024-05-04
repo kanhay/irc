@@ -121,11 +121,14 @@ class	Server{
 		//AZMARA
 		void	privmsgCommand(std::string &args, Client &cli);//NEW
 		int		validArgsPriv(std::string &args, Client &cli);//NEW
+		void	store_clients_channels(std::string &args, size_t count, size_t ind, size_t start);
+		void	sendToClients(size_t msg_begin, Client &cli, bool isMessage);
+		void	sendToChannels(size_t msg_begin, Client &cli, bool isMessage);
 
 
 		////////UPPPPPPPP
 		void handleError(Client &c);
-		void sendNickMsg2Mem(std::string msg, Client c);//M NEW
+		void sendNickMsg2Mem(std::string msg, Client c);
 
 
 		

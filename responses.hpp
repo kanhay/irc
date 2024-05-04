@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/29 15:48:47 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/02 15:52:00 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 #define ERR_KEYALREADYSET(nick, channel) ":ircserv 467 " + nick + " " + channel + " " + ":Channel key already set\r\n"
 #define ERR_NOACCCHTOPIC(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You do not have access to change the topic on this channel\r\n" ///////
 #define ERR_CANNOTKICK(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You must be a channel half-operator\r\n" ///////
-#define RPL_CHANNELMODES(channelName, nick, channelmode) ":ircserv 324 " + nick + " " + channelName + " +" + channelmode + "\r\n"//M
+#define RPL_CHANNELMODES(channelName, nick, channelmode) ":ircserv 324 " + nick + " " + channelName + " :" + channelmode + "\r\n"//MM
 
 
 #define RPL_YOURHOST(nick) ":" + "ircserv" + " 002 " + nick + " :Your host is " + "ircserv" + " running version 1.0 !\r\n"
@@ -48,6 +48,8 @@
 //AZMARA
 #define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given (PRIVMSG)\r\n"
 #define ERR_NO_TEXT(nick) "ircserv 412 " + nick + " " + ":No text to send\r\n"
+#define ERR_CANNOTSENDTOCHANNEL(channel, nick) ":ircserv 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
+#define RPL_NICKCHANGE(oldNick, nick) ":" + oldNick + " NICK " + nick + "\r\n"
 
 #define RPL_NICKCHANGE(oldNick, nick) ":" + oldNick + " NICK " + nick + "\r\n"
 

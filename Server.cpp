@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/05/01 14:35:05 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/03 15:46:24 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,19 +72,26 @@ std::string Server::getCommand(){
 	return command;
 }
 
-void	Server::clearClient(int fd){
-	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
-		if(fds[i].fd == fd){
-			fds.erase(fds.begin() + i);
-			break ;
-		}
-	}
-	for (size_t i = 0; i < clients.size(); ++i){//remove client from Clients vector
-		if(clients[i].getClientFD() == fd){
-			clients.erase(clients.begin() + i);
-			break ;
-		}
-	}
+void    Server::clearClient(int fd){
+    for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
+        if(fds[i].fd == fd){
+            fds.erase(fds.begin() + i);
+            break ;
+        }
+    }
+    for (size_t i = 0; i < clients.size(); ++i){//remove client from Clients vector
+        if(clients[i].getClientFD() == fd){
+            for (unsigned int i = 0; i < channels.size(); i++){
+                if (channels[i].isMember(clients[i])){
+                    channels[i].removeOperator(clients[i]);
+                    channels[i].removeRegularUser(clients[i]);
+                }
+            }
+            clients.erase(clients.begin() + i);
+            return ;
+        }
+    }
+
 }
 void	Server::closeFD(){
 	for (size_t i = 0; i < clients.size(); ++i){//close clients fd
@@ -237,7 +244,7 @@ bool    Server::isInUseNickname(std::string nickname){
     for (unsigned int i = 0; i < clients.size(); i++){
 		std::string cltnick;
 		cltnick = tolowercase(clients[i].getNickname());
-        if (cltnick == nickname)
+        if (cltnick == nickname && clients[i].isRegistered())//MM clients[i].isRegistered() added
             return true;
     }
     return false;
@@ -338,7 +345,7 @@ void	Server::fillSayingsBox(std::string fileName){
 }
 
 
-void Server::sendNickMsg2Mem(std::string msg, Client c){//M new
+void Server::sendNickMsg2Mem(std::string msg, Client c){
 	for (unsigned int i = 0; i < channels.size(); i++){
 		if (channels[i].isMember(c)){
 			channels[i].sendNickMsg2All(*this, msg, c);

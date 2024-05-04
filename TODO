@@ -1,15 +1,20 @@
-ADD RELPY FOR NICK NAME AFTER REGISTERED "nick rel-isma"
+kick #ww mm
+:mm!~@ KICK #ww mm :mm //here the last member is kicked
 
+join #ww //here hh would be the operator of the a channel with the same name
+:hh!~h@0.0.0.0 JOIN :#ww
+:ircserv 353 hh = #ww : hh <<<<not operator because the channel was not deleted
+:ircserv 366 hh #ww :END of /NAMES list
 
-ADD @ IN operator IN CHANNEL when CREAT CHANNEL "join #ch1
-:rel-isma!~f@0.0.0.0 JOIN :#ch1
-:ircserv 353 rel-isma = #ch1 :rel-isma
-:ircserv 366 rel-isma #ch1 :END of /NAMES list" IN RELPY 353 "
+mode #ch 123 
+:ircserv 472 n3 #ch 1 :is not a recognised channel mode.
+:ircserv 482 n3 #ch :You must have channel halfop access or above to set channel mode 1
 
+privmsg #ch,#jh
+#ch,#jh
+:ircserv 404 n2 #ch :Cannot send to channel
 
-CHANGE NICK NAME AFTER MODIF NICK IN CHANNELS
-
-remove Client after quit
-
-remove channel when the last member quit
-
+mode #Ch toli
+:ircserv 696 n2 #Ch o * you must specifiy a parameter for the op mode.
+:ircserv 696 n2 #Ch l * you must specifiy a parameter for the limit mode.
+:n2!~ MODE #ch +toli

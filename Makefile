@@ -6,7 +6,7 @@
 #    By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/01 18:16:43 by khanhayf          #+#    #+#              #
-#    Updated: 2024/04/26 16:13:19 by khanhayf         ###   ########.fr        #
+#    Updated: 2024/05/03 16:19:11 by khanhayf         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ OBJS	= $(SRCS:.cpp=.o)
 
 CXX	 = c++
 
-CXXFLAGS = -Wall -Werror -Wextra  -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra  -std=c++98 #-fsanitize=address//MM
 
 %.o: %.cpp Server.hpp Client.hpp Channel.hpp responses.hpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
