@@ -20,6 +20,7 @@
 #include <fstream>
 #include <cctype> // toupper
 #include "responses.hpp"
+#include <ctime>
 
 class Client;
 class Channel;
@@ -52,7 +53,10 @@ class	Server{
 		std::string ChannelTopic;
 		std::string topic;
 		std::string Channelkick;
-		std::vector<std::string> ClientsKick;
+		std::vector<std::string> ClientsKick;	
+
+		///////&&&&&&&&&&&&&&
+		std::string reason;
 
 	public:
 		Server();
@@ -129,6 +133,7 @@ class	Server{
 		////////UPPPPPPPP
 		void handleError(Client &c);
 		void sendNickMsg2Mem(std::string msg, Client c);
+		void removeChannel(std::string chName);
 
 
 		

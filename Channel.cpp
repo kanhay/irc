@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
 Channel::Channel(Client &creator, std::string chname, Server &s)
-:name(chname), topicLock(true), hasLimit(false), hasKey(false){ //MM topic is locked by default
+:name(chname), topicLock(true), hasLimit(false), hasKey(false){
     this->operators.push_back(creator); //the channel creator is considered an operator by default
     this->mode = "";//////ik
     s.addChannel(*this);
@@ -148,11 +148,13 @@ bool Channel::isMember(Client const& c){
 void Channel::sendMsg2Members(Server &s, Client &c){
     for(size_t i = 0; i < this->regularUsers.size(); ++i){
         if (toLowerCase(this->regularUsers[i].getNickname()) != toLowerCase(c.getNickname()))
-            s.sendMsg(this->regularUsers[i].getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), this->getName(), this->regularUsers[i].getClientIP()));
+            s.sendMsg(this->regularUsers[i].getClientFD(), RPL_JOIN(c.getNickname(), \
+                c.getUsername(), this->getName(), this->regularUsers[i].getClientIP()));
     }
     for(size_t i = 0; i < this->operators.size(); ++i){
         if (toLowerCase(this->operators[i].getNickname()) != toLowerCase(c.getNickname()))
-            s.sendMsg(this->operators[i].getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), this->getName(), this->operators[i].getClientIP()));
+            s.sendMsg(this->operators[i].getClientFD(), RPL_JOIN(c.getNickname(), \
+                c.getUsername(), this->getName(), this->operators[i].getClientIP()));
     }
 }
 
@@ -190,7 +192,7 @@ bool Channel::hasLimitCanJ(void){
 }
 
 std::string Channel::makeStringMember(void){
-	std::string member;
+	std::string member = "";
 	for(size_t i = 0; i < this->operators.size(); ++i){
 		if (i != 0)
 			member += " ";
@@ -202,10 +204,10 @@ std::string Channel::makeStringMember(void){
 	return (member);
 }
 
-// void Channel::channelStatusMsg(Server &s,std::string modestring, std::string newOp){//MM
+// void Channel::channelStatusMsg(Server &s,std::string modestring, std::string newOp){
 //     std::string str = "";
 //     std::string sign;
-//     if (modestring.find_first_of("+-") == std::string::npos && !modestring.empty())
+//     if (modestring.find_first_of("+-") == std::string::npos && !modestring.empty()) 
 //         sign = "+";
 //     for (unsigned int i = 0; i < modestring.size(); i++){
 //         if (modestring[i] == 'k' && this->getHasKey()){
@@ -222,16 +224,20 @@ std::string Channel::makeStringMember(void){
 //             str += newOp;}
 //     }
 //     for(unsigned int i = 0; i < this->regularUsers.size(); ++i){
-//         std::string msg = ":" + this->regularUsers[i].getNickname() + "!~" + this->regularUsers[i].getUsername() + " " + s.getCommand() + " " + this->getName() + " " + sign + modestring + str + "\n";
+//         std::string msg = ":" + this->regularUsers[i].getNickname() + "!~" + \
+//             this->regularUsers[i].getUsername() + " " + s.getCommand() + " " + \
+//             this->getName() + " " + sign + modestring + str + "\n";
 //         s.sendMsg(this->regularUsers[i].getClientFD(), msg);
 //     }
 //     for(unsigned int i = 0; i < this->operators.size(); ++i){
-//         std::string msg = ":" + this->operators[i].getNickname() + "!~" + this->operators[i].getUsername() + " " + s.getCommand()+ " " + this->getName() + " " + sign + modestring + str + "\n";
+//         std::string msg = ":" + this->operators[i].getNickname() + "!~" + \
+//             this->operators[i].getUsername() + " " + s.getCommand()+ " " + \
+//             this->getName() + " " + sign + modestring + str + "\n";
 //         s.sendMsg(this->operators[i].getClientFD(), msg);
 //     }
 // }
 
-std::string Channel::channelModes(){//MM
+std::string Channel::channelModes(){
     std::string str = "";
     if (this->getHasKey())
         str += "k";
@@ -243,11 +249,11 @@ std::string Channel::channelModes(){//MM
         str += "t";
     if (!str.empty()){
         for (unsigned int i = 0; str[i] != ' '; i++){
-            if (str[i] == 'k' && getHasKey()){//MM
+            if (str[i] == 'k' && getHasKey()){
                 str += " ";
                 str += getKey();
             }
-            else if (str[i] == 'l' && getHasLimit()){//MM
+            else if (str[i] == 'l' && getHasLimit()){
                 str += " ";
                 std::stringstream ss;
                 ss << this->getLimit();
@@ -283,13 +289,30 @@ std::string    Channel::toLowerCase(std::string str){
     return (str);
 }
 
-void Channel::sendMsgKick2Members(Server &s, Client &c, std::string name){
+///////&&&&&&&&&&&&&&
+void Channel::sendMsgKick2Members(Server &s, Client &c, std::string name, std::string reason){
     for (size_t i = 0; i < this->regularUsers.size(); ++i){
+        if(reason == "")
+            reason = c.getNickname();
 		s.sendMsg(this->regularUsers[i].getClientFD(), RPL_KICK(c.getNickname(), \
-        c.getUsername(), c.getHostname(), this->getName(), name));
+        c.getUsername(), c.getHostname(), this->getName(), name, reason));
 	}
     for (size_t i = 0; i < this->operators.size(); ++i){
+        if(reason == "")
+            reason = c.getNickname();
 		s.sendMsg(this->operators[i].getClientFD(), RPL_KICK(c.getNickname(), \
-        c.getUsername(), c.getHostname(), this->getName(), name));
+        c.getUsername(), c.getHostname(), this->getName(), name, reason));
 	}
+}
+
+///////&&&&&&&&&&&&&&
+size_t Channel::getSizeMembers(void){
+    return (this->operators.size() + this->regularUsers.size());
+}
+void Channel::setStringTime(std::string str){
+    this->stringtime = str;
+}
+
+std::string Channel::getStringTime(void) const{
+    return (this->stringtime);
 }

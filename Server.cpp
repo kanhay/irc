@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/05/03 15:46:24 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/04 12:45:40 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,24 @@ Server::Server(){
 	// nick = "tikchbila";
 	// user = "tiwliwla";
 	fillSayingsBox("sayings.txt");
+	// fds(0), sayingsBox(0), clients(0), channels(0),
+	// joinChannel(0), joinPassword(0), vec_cl(0), vec_ch(0), channelPass(0),
+	// ClientsKick(0)
+	// this->serverFD = -1; 
+	// this->password = "";
+	// fillSayingsBox("sayings.txt");
+	// this->reason = "";
+	// this->port = 0;
+	// this->signal = false;
+	// this->connectionID = 0;
+	// this->command = "";
+	// this->args = "";
+	// this->target = "";
+	// this->message = "";
+	// this->ChannelTopic = "";
+	// this->existPassword = 0;
+	// this->topic = "";
+	// this->Channelkick = "";
 }
 
 Server::~Server(){
@@ -244,7 +262,7 @@ bool    Server::isInUseNickname(std::string nickname){
     for (unsigned int i = 0; i < clients.size(); i++){
 		std::string cltnick;
 		cltnick = tolowercase(clients[i].getNickname());
-        if (cltnick == nickname && clients[i].isRegistered())//MM clients[i].isRegistered() added
+        if (cltnick == nickname && clients[i].isRegistered())
             return true;
     }
     return false;
@@ -353,3 +371,11 @@ void Server::sendNickMsg2Mem(std::string msg, Client c){
 	}
 }
 
+void Server::removeChannel(std::string chName){
+	for (unsigned int i = 0; i < this->channels.size(); i++){
+        if (tolowercase(this->channels[i].getName()) == tolowercase(chName)){
+            this->channels.erase(this->channels.begin() + i);
+            break ;
+        }
+    }
+}

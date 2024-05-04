@@ -1,19 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   responses.hpp                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/05/02 15:52:00 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #ifndef RESPONSES_HPP
 #define RESPONSES_HPP
-
-
 #define RPL_WELCOME(nick, user) ":ircserv 001 " + nick + " :Welcome to the ft_irc IRC network " + nick + "!~" + user + "@127.0.0.1\r\n"
 #define ERR_ALREADYREGISTERED(nick) ":ircserv 462 " + nick + " :You may not reregister\r\n"
 #define ERR_PASSWDMISMATCH(nick) ":ircserv 464 " + nick + " :Password incorrect!\r\n"
@@ -38,7 +25,8 @@
 #define ERR_KEYALREADYSET(nick, channel) ":ircserv 467 " + nick + " " + channel + " " + ":Channel key already set\r\n"
 #define ERR_NOACCCHTOPIC(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You do not have access to change the topic on this channel\r\n" ///////
 #define ERR_CANNOTKICK(nick, channel) ":ircserv 482 " + nick + " " + channel + " :You must be a channel half-operator\r\n" ///////
-#define RPL_CHANNELMODES(channelName, nick, channelmode) ":ircserv 324 " + nick + " " + channelName + " :" + channelmode + "\r\n"//MM
+#define RPL_CHANNELMODES(channelName, nick, channelmode) ":ircserv 324 " + nick + " " + channelName + " :" + channelmode + "\r\n"
+
 
 
 #define RPL_YOURHOST(nick) ":" + "ircserv" + " 002 " + nick + " :Your host is " + "ircserv" + " running version 1.0 !\r\n"
@@ -55,14 +43,14 @@
 
 // #define ERR_ALREADYREGISTERED(nick) ":" + "ircserv" + " 462 " + nick + " :You may not reregister !\r\n"
 
-#define ERR_BADCHANNELNAME(nick, channelname) ":" + "ircserv" + " 476 " + nick + " " + channelname + " :Invalid channel name." + "\r\n"
+#define ERR_BADCHANNELNAME(nick, channelname) ":ircserv 476 " + nick + " " + channelname + " :Invalid channel name." + "\r\n"
 #define ERR_CHANNELISFULL(nick, channelName) ":" + nick + " 471 " + channelName + " :Cannot join channel (+l)\r\n"
 #define ERR_INVITEONLY(nick, channelName) ":" + nick + " 473 " + channelName + " :Cannot join channel (+i)\r\n"
 
-#define RPL_TOPICDISPLAY(hostname, nick, channel, topic) ":" + "ircserv" + " 332 " + nick + " " + channel + " :" + topic + "\r\n"
-#define RPL_TOPIC(hostname, nick, channel, setter, topic) ":" + "ircserv" + " 332 " + nick + " " + channel + " :" + setter + " has set a new topic: " + topic + "\r\n"
+#define RPL_TOPICDISPLAY(hostname, nick, channel, topic) ":ircserv 332 " + nick + " " + channel + " :" + topic + "\r\n"
+#define RPL_TOPIC(hostname, nick, channel, setter, topic) ":ircserv 332 " + nick + " " + channel + " :" + setter + " has set a new topic: " + topic + "\r\n"
 
-#define RPL_TOPICWHOTIME(topicsetter, time, nick, channelName) ":" + "ircserv" + " 333 " + nick + " " + channelName + " " + topicsetter + "!~" + topicsetter + "@" + "ircserv" + " " + time + "\r\n"
+#define RPL_TOPICWHOTIME(topicsetter, topictime, nick, channelName) ":ircserv 333 " + nick + " " + channelName + " " + topicsetter + "!~" + topicsetter + "@ircserv " + topictime + "\r\n"
 
 #define RPL_MODEIS(channel, mode) ":" + "ircserv" + " MODE " + channel + " " + mode + "\r\n"
 #define RPL_MODEISLIMIT(channel, mode, newlimit) ":" + "ircserv" + " MODE " + channel + " " + mode + " " + newlimit + "\r\n"
@@ -74,8 +62,8 @@
 
 #define ERR_INPUTTOOLONG(nick) ":" + "ircserv" + " 417 " + nick + " :Input line was too long !\r\n"
 
-#define RPL_VIEWTOPIC(hostname, nick, channel, topic) ":" + "ircserv" + " 332 " + nick + " " + channel + " :" + topic + "\r\n"
-#define RPL_VIEWTIME(hostname, nick, channel, time) ":" + "ircserv" + " 333 " + nick + " " + channel + " " + nick + " " + time + "\r\n"
+#define RPL_VIEWTOPIC(hostname, nick, channel, topic) ":ircserv 332 " + nick + " " + channel + " :" + topic + "\r\n"
+#define RPL_VIEWTIME(hostname, nick, channel, time) ":ircserv 333 " + nick + " " + channel + " " + nick + " " + time + "\r\n"
 #define RPL_SETTOPIC(nick, channel, topic) ":" + nick + "!" + nick + "@" + "ircserv" + " TOPIC " + channel + " :" + topic + "\r\n"
 
 #define RPL_BOT(hostname, nick, message) ":" + "ircserv" + " 001 " + nick + " Dad joke: " + message + "\r\n"
@@ -83,7 +71,7 @@
 #define RPL_UMODEIS(hostname, channelname) ":" + "ircserv" + " MODE " + channelname + " +nt\r\n"
 
 #define RPL_YOUREOPER(hostname, nick) ":" + "ircserv" + " 381 " + nick + ":You are now an IRC operator\r\n"
-#define RPL_KICK(kicker, username, host, channel, targetuser) ":" + kicker + "!~" + username + "@" + host + " KICK " + channel + " " + targetuser + " :" + kicker + "\r\n"
+#define RPL_KICK(kicker, username, host, channel, targetuser, reason) ":" + kicker + "!~" + username + "@" + host + " KICK " + channel + " " + targetuser + " :" + reason + "\r\n"
 #define PRIVMSG_FORMAT(senderNick, senderUsername, senderHostname, receiver, message) ":" + senderNick + "!~" + senderUsername + "@" + senderHostname + " PRIVMSG " + receiver + " :" + message + "\r\n"
 
 
@@ -97,5 +85,6 @@
 #define ERR_BADCHANNELKEY(nick, channelName) ":ircserv 475 " + nick + " " + channelName + " :Cannot join channel (+K) - bad key\r\n"
 #define ERR_NOTOPIC(channel, nick) ":ircserv 331 " + nick + " " + channel + " :No topic is set.\r\n"
 #define ERR_USAGE(nick, command, msg) ":ircserv 650 " + nick + " " + command + " :" + msg + "\r\n"
+
 
 #endif

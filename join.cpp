@@ -12,15 +12,15 @@ void Server::addChannel(Client& c, int i){
 	Channel &findingChannel = findChannel(this->channelPass[i].first);
 	std::string member = findingChannel.makeStringMember();
 	if (c.isInUseInvitedCh(findingChannel.getName())){
-			if (!findingChannel.isMember(c)){
-				member += " " + c.getNickname();
-				c.removeInvitedCh(this->channelPass[i].first);
-				findingChannel.addRegularUser(c);
-				sendMsg(c.getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), findingChannel.getName(), c.getClientIP()));
-				sendMsg(c.getClientFD(), RPL_NAMREPLY(member, findingChannel.getName(), c.getNickname()));
-				sendMsg(c.getClientFD(), RPL_ENDOFNAMES(c.getHostname(), c.getNickname(), findingChannel.getName()));
-				findingChannel.sendMsg2Members(*this, c);
-			}
+		if (!findingChannel.isMember(c)){
+			member += " " + c.getNickname();
+			c.removeInvitedCh(this->channelPass[i].first);
+			findingChannel.addRegularUser(c);
+			sendMsg(c.getClientFD(), RPL_JOIN(c.getNickname(), c.getUsername(), findingChannel.getName(), c.getClientIP()));
+			sendMsg(c.getClientFD(), RPL_NAMREPLY(member, findingChannel.getName(), c.getNickname()));
+			sendMsg(c.getClientFD(), RPL_ENDOFNAMES(c.getHostname(), c.getNickname(), findingChannel.getName()));
+			findingChannel.sendMsg2Members(*this, c);
+		}
 	}
 	else{
 		if(findingChannel.getHasLimit()){
@@ -70,9 +70,10 @@ void Server::execJoinCommand(Client &c){
 			this->channelPass[i].second = "";
 	}
 	for(size_t i=0; i < this->channelPass.size(); ++i){
-		if (this->channelPass[i].first[0] != '#' || (this->channelPass[i].first[0] == '#' && \
-			!isprint(this->channelPass[i].first[1])))
-			sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(this->channelPass[i].first, c.getNickname()));
+		if (this->channelPass[i].first[0] != '#')
+			sendMsg(c.getClientFD(), ERR_BADCHANNELNAME(c.getNickname(), this->channelPass[i].first));
+		else if (this->channelPass[i].first[0] == '#' && !isprint(this->channelPass[i].first[1]))
+			sendMsg(c.getClientFD(), RPL_ENDOFNAMES(c.getHostname(), c.getNickname(), this->channelPass[i].first));
 		else{
 			if (!this->isInUseChName(this->channelPass[i].first))
 				createChannel(c, i);
