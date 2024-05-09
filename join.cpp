@@ -58,19 +58,13 @@ void Server::execJoinCommand(Client &c){
 	this->channelPass.resize(this->joinChannel.size());
 	for(size_t i = 0; i < this->joinChannel.size(); ++i){
 		this->channelPass[i].first = this->joinChannel[i];
-		if (i < this->joinPassword.size()){
-			size_t found = this->joinPassword[i].find_first_of(" ");
-			if (i == (this->joinPassword.size() - 1) && found != std::string::npos){
-				this->channelPass[i].second = this->joinPassword[i].substr(0, found);
-			}
-			else
-				this->channelPass[i].second = this->joinPassword[i];
-    	}
+		if (i < this->joinPassword.size())
+			this->channelPass[i].second = this->joinPassword[i];
 		else
 			this->channelPass[i].second = "";
 	}
 	for(size_t i=0; i < this->channelPass.size(); ++i){
-		if (this->channelPass[i].first[0] != '#')
+		if (this->channelPass[i].first[0] != '#' || (this->channelPass[i].first[0] == '#' && !this->channelPass[i].first[1]))
 			sendMsg(c.getClientFD(), ERR_BADCHANNELNAME(c.getNickname(), this->channelPass[i].first));
 		else if (this->channelPass[i].first[0] == '#' && !isprint(this->channelPass[i].first[1]))
 			sendMsg(c.getClientFD(), RPL_ENDOFNAMES(c.getHostname(), c.getNickname(), this->channelPass[i].first));
@@ -90,52 +84,78 @@ void Server::execJoinCommand(Client &c){
 	this->joinPassword.clear();
 }
 
-int Server::joinSingleChannel(void){
-	size_t found = this->args.find_first_of(" \r\t");
-	std::string temp_args = this->args;
+std::string skipCommas(std::string s){
+	std::string str = "";
+	size_t i = 0;
+	while (s[i] && s[i] == ','){
+		i++;
+	}
+	for (; i < s.size() ; ++i){
+		if (s[i] == ','){
+			while (s[i] && s[i] == ','){
+				i++;
+			}
+			if (s[i] && s[i] != ' ' && s[i] != '\r' && s[i] != '\t')
+				i--;
+		}
+		str += s[i];
+	}
+	return (str);
+}
+
+void Server::joinSingleChannel(void){
+	size_t found = this->args.find_first_of(" \r\t\0");
 	this->joinChannel.push_back(this->args.substr(0, found));
 	if (this->existPassword){
-		while(temp_args[found] == ' ' || temp_args[found] == '\r' || temp_args[found] == '\t'){
-			found++;
-		};
-		if (temp_args[found] == ':')
-			found++;
-		temp_args = temp_args.substr(found, temp_args.length());
-		size_t found_sp = temp_args.find_first_of(" \r\t");
-		if (found_sp != std::string::npos)
-			this->joinPassword.push_back(this->args.substr(found, found_sp));
-		else
-			this->joinPassword.push_back(this->args.substr(found, this->args.length()));
+		std::string pass = this->args.substr(found, this->args.length());
+		pass = skipSpaces(pass);
+		if (pass[0] == ':')
+			this->joinPassword.push_back(pass.substr(1, pass.length()));
+		else{
+			pass = skipCommas(pass);
+			size_t found_sp = pass.find_first_of(" ,\r\t\0");
+			if (found_sp != std::string::npos)
+				this->joinPassword.push_back(pass.substr(0, found_sp));
+		}
 	}
-	return(1);
 }
+
 
 void Server::joinMultiChannels(void){
 	std::string temp_args = this->args;
-	size_t found = this->args.find_first_of(" \r\t");
+	size_t found = this->args.find_first_of(" \r\t\0");
 		std::string channels = temp_args.substr(0, found);
+		channels = skipCommas(channels);
 		int count_ch = countComma(channels);
 		size_t found_commach = channels.find_first_of(",");
 		this->joinChannel.push_back(channels.substr(0, found_commach));
 		channels = channels.substr(found_commach + 1, channels.length());
 		for(int i = 0; i < count_ch; ++i){
 			found_commach = channels.find_first_of(",");
-			this->joinChannel.push_back(channels.substr(0, found_commach));
+            if (channels.substr(0, found_commach) != "")
+			    this->joinChannel.push_back(channels.substr(0, found_commach));
 			channels = channels.substr(found_commach + 1, channels.length());
 		}
 		if (this->existPassword){
-			std::string passWord = temp_args.substr(found + 1, temp_args.length());\
+			std::string passWord = temp_args.substr(found + 1, temp_args.length());
 			int count_ps = countComma(passWord);
 			passWord = skipSpaces(passWord);
 			if (passWord[0] == ':')
 				this->joinPassword.push_back(passWord.substr(1, passWord.length()));
 			else{
+				size_t fSpace = passWord.find_first_of(" \r\t");
+				if(fSpace == std::string::npos)
+					passWord = passWord.substr(0, passWord.length());
+				else
+					passWord = passWord.substr(0, fSpace);
+				passWord = skipCommas(passWord);
 				size_t found_commaps = passWord.find_first_of(",");
 				this->joinPassword.push_back(passWord.substr(0, found_commaps));
 				passWord = passWord.substr(found_commaps + 1, passWord.length());
 				for(int i = 0; i < count_ps; ++i){
 					found_commaps = passWord.find_first_of(",");
-					this->joinPassword.push_back(passWord.substr(0, found_commaps));
+                    if (passWord.substr(0, found_commaps) != "")
+					    this->joinPassword.push_back(passWord.substr(0, found_commaps));
 					passWord = passWord.substr(found_commaps + 1, passWord.length());
 				}
 			}
@@ -152,16 +172,7 @@ int Server::argsJoin(void){
 			found++;
 		}
 		if (this->args[found])
-		{
-			std::string passWord = &this->args[found];
-			size_t foundSpace = passWord.find_first_of(" ");
-			if (passWord[foundSpace] == ' ' || passWord[foundSpace] == '\r' || passWord[foundSpace] == '\t'){
-				while (this->args[foundSpace] == ' ' || this->args[foundSpace] == '\r' || this->args[foundSpace] == '\t'){
-					foundSpace++;
-				}
-			}
 			return (1);
-		}
 		else
 			return (0);
 	}
@@ -176,8 +187,8 @@ void Server::whithoutPassword(void){
 }
 
 void Server::whithPassword(void){
-	std::string channls = this->args.substr(0, this->args.find_first_of(" \r\t"));
-	size_t foundComma = channls.find_first_of(",");
+	std::string channels = this->args.substr(0, this->args.find_first_of(" \r\t"));
+	size_t foundComma = channels.find_first_of(",");
 	if (foundComma != std::string::npos)
 		joinMultiChannels();
 	else

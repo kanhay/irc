@@ -58,7 +58,9 @@ class	Server{
 		///////&&&&&&&&&&&&&&
 		std::string reason;
 
+
 	public:
+		std::vector<std::string> nickMsgRecievers;//MM
 		Server();
 		~Server();//close users fds before quitting
 		//--Setters--//
@@ -110,7 +112,7 @@ class	Server{
 		void	execTopicCommand(Client &c);
 		void	kickCommand(Client &c);
 		void	execKickCommand(Client &c);
-		int 	joinSingleChannel(void);
+		void 	joinSingleChannel(void);
 		void	joinMultiChannels(void);
 
 		void 	whithoutPassword(void);
@@ -135,8 +137,7 @@ class	Server{
 		void sendNickMsg2Mem(std::string msg, Client c);
 		void removeChannel(std::string chName);
 
-
-		
+		bool	msgAlreadyRecieved(std::string nick);//M neW
 };
 
 
@@ -144,5 +145,6 @@ class	Server{
 ///////
 std::string	skipSpaces(std::string str);
 int countComma(std::string str);
+std::string skipCommas(std::string s);
 
 #endif
