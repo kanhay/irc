@@ -13,8 +13,12 @@ void Server::execKickCommand(Client& c){
 					if (!findingChannel.isMember(findingClient))
 						sendMsg(c.getClientFD(), ERR_USERNOTINCHANNEL(c.getNickname(), findingClient.getNickname(), this->Channelkick));
 					else{
-						if (!findingChannel.isOperator(c))
-							sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick));
+						if (!findingChannel.isOperator(c)){
+							if (findingChannel.isOperator(findingClient))
+								sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick, " :You must be a channel operator\r\n"));
+							else
+								sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick, " :You must be a channel half-operator\r\n"));
+						}
 						else{
 							findingChannel.sendMsgKick2Members(*this, c, findingClient.getNickname(), this->reason);
 							if(findingChannel.isOperator(findingClient))
@@ -57,8 +61,7 @@ void Server::makeClientKick(std::string clKick, int exist2Points){
 		}
 	}
 	for(size_t i = 0; i < vec.size(); ++i){
-		if (vec[i] != "")
-			this->ClientsKick.push_back(vec[i]);
+		this->ClientsKick.push_back(vec[i]);
 	}
 	vec.clear();
 }
