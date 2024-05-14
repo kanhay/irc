@@ -159,28 +159,28 @@ void Channel::sendMsg2Members(Server &s, Client &c){
 }
 
 //AZMARA
-void	Channel::sendmsg2chanRegulars(Server s, std::string message){
+void	Channel::sendmsg2chanRegulars(Server S, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->regularUsers.size(); ++i){
-		s.sendMsg(this->regularUsers[i].getClientFD(), message);
-		s.sendMsg(this->regularUsers[i].getClientFD(), "\n");
+		S.sendMsg(regularUsers[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
+		S.sendMsg(regularUsers[i].getClientFD(), "\n");
 	}
 }
-void	Channel::sendmsg2chanOperators(Server s, std::string message){
+void	Channel::sendmsg2chanOperators(Server S, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->operators.size(); ++i){
-		s.sendMsg(this->operators[i].getClientFD(), message);
-		s.sendMsg(this->operators[i].getClientFD(), "\n");
+		S.sendMsg(operators[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
+		S.sendMsg(operators[i].getClientFD(), "\n");
 	}
 }
 
-void Channel::sendNickMsg2All(Server &s, std::string message, Client c){//MM
+void Channel::sendNickMsg2All(Server &s, std::string message){
 	for (size_t i = 0; i < this->regularUsers.size(); ++i){
-        if (toLowerCase(this->regularUsers[i].getNickname()) != toLowerCase(c.getNickname()) && !s.msgAlreadyRecieved(this->regularUsers[i].getNickname())){
+        if (!s.msgAlreadyRecieved(this->regularUsers[i].getNickname())){
 		    s.sendMsg(this->regularUsers[i].getClientFD(), message);
             s.nickMsgRecievers.push_back(this->regularUsers[i].getNickname());
         }
 	}
     for (size_t i = 0; i < this->operators.size(); ++i){
-        if (toLowerCase(this->operators[i].getNickname()) != toLowerCase(c.getNickname()) && !s.msgAlreadyRecieved(this->operators[i].getNickname())){
+        if (!s.msgAlreadyRecieved(this->operators[i].getNickname())){
 		    s.sendMsg(this->operators[i].getClientFD(), message);
             s.nickMsgRecievers.push_back(this->regularUsers[i].getNickname());
         }
@@ -191,8 +191,8 @@ void Channel::sendNickMsg2All(Server &s, std::string message, Client c){//MM
 ////////UPPPPPPPP
 bool Channel::hasLimitCanJ(void){
     if((this->operators.size() + this->regularUsers.size()) >= this->limit)
-        return (true);
-    return (false);
+        return (false);
+    return (true);
 }
 
 std::string Channel::makeStringMember(void){

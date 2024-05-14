@@ -76,10 +76,10 @@ class Channel{
 
         ///////ik
         void sendMsg2Members(Server &s, Client &c);
-        void sendNickMsg2All(Server &s, std::string message, Client c);
+        void sendNickMsg2All(Server &s, std::string message);
          //AZMARA
-        void	sendmsg2chanRegulars(Server s, std::string message);
-		void	sendmsg2chanOperators(Server s, std::string message);
+        void	sendmsg2chanRegulars(Server S, Client cli, std::string message, Channel ch);//NEW
+		void	sendmsg2chanOperators(Server S, Client cli, std::string message, Channel ch);//NEW
 
         // void channelStatusMsg(Server &s, std::string modestring, std::string newOp);
         std::string channelModes();

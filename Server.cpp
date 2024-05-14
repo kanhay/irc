@@ -151,12 +151,16 @@ void	Server::acceptClient(){
 	Client				client;
 	struct sockaddr_in	clientaddress;
 	struct pollfd		newpool;
-	socklen_t			clientaddrlen = 0;
+	socklen_t			clientaddrlen = sizeof(clientaddress);
 
 	memset(&clientaddress, 0, sizeof(clientaddress));
 	this->connectionID = accept(serverFD, (struct sockaddr *)&clientaddress, &clientaddrlen);//new socket to 	assure safe communication with multiple clients 
 	if (connectionID == -1){
 		std::cerr << "Failed to connect!" << std::endl;
+		return ;
+	}
+	if (clientaddrlen != sizeof(clientaddress)) {
+		std::cerr << "Failed to get client address!" << std::endl;
 		return ;
 	}
 	if (send(connectionID, "enter: password, nickname, and username\n", 41, 0) == -1)
@@ -177,13 +181,18 @@ void	Server::acceptClient(){
 
 
 
-void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
+void	Server::recieve_data(int fd){
 	char		buffer[1024];
 	std::string	str;
 	size_t		i;
 
 	memset(buffer, 0, sizeof(buffer));
 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
+	if (total <= 0){
+		std::cout << "client disconnected" << std::endl;
+		clearClient(fd);
+		close(fd);
+	}
 	std::string strBuffer = buffer;
 	for (i = 0; i < clients.size(); i++){
 		if (clients[i].getClientFD() == fd)//IF ITS NOT FOUND
@@ -204,41 +213,33 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 				sendMsg(fd, ERR_INPUTTOOLONG(str));
 			}
 			else{
-				if (total <= 0){
-					std::cout << "client disconnected" << std::endl;
-					clearClient(fd);
-					close(fd);
-				}
-				else{
-					std::string	buf = strBuffer;
-					size_t fond;
-					std::string	new_buf = skipSpaces(buf);
-					for(size_t i = 0; i <= new_buf.size(); i++){
-						fond = new_buf.find_first_of("\n");
-						if (fond == std::string::npos)
-							return;
-						std::string	commond = new_buf.substr(0, fond);
-						size_t	sp = commond.find_first_of("\t\r ");
-						if (sp != std::string::npos){
-							size_t	ind = sp;
-							while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
-								ind++;
-							if (commond[ind] == '\n')
-								this->args = "";
-							else
-								this->args = commond.substr(ind, fond);
-							this->command = commond.substr(0, sp);
-						}
-						else{
-							this->command = commond.substr(0, fond); 
-							this->args = '\0';
-						}
-						new_buf = new_buf.substr(fond+1, new_buf.size());
-						checkCommands(fd);//M
-						command.clear();
-						args.clear();
-
+				std::string	buf = strBuffer;
+				size_t fond;
+				std::string	new_buf = skipSpaces(buf);
+				for(size_t i = 0; i <= new_buf.size(); i++){
+					fond = new_buf.find_first_of("\n");
+					if (fond == std::string::npos)
+						return;
+					std::string	commond = new_buf.substr(0, fond);
+					size_t	sp = commond.find_first_of("\t\r ");
+					if (sp != std::string::npos){
+						size_t	ind = sp;
+						while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
+							ind++;
+						if (commond[ind] == '\n')
+							this->args = "";
+						else
+							this->args = commond.substr(ind, fond);
+						this->command = commond.substr(0, sp);
 					}
+					else{
+						this->command = commond.substr(0, fond); 
+						this->args = '\0';
+					}
+					new_buf = new_buf.substr(fond+1, new_buf.size());
+					checkCommands(fd);
+					command.clear();
+					args.clear();
 				}
 			}
 			strBuffer.clear();
@@ -378,13 +379,13 @@ void	Server::fillSayingsBox(std::string fileName){
 }
 
 
-void Server::sendNickMsg2Mem(std::string msg, Client c){
-	for (unsigned int i = 0; i < channels.size(); i++){
-		if (channels[i].isMember(c)){
-			channels[i].sendNickMsg2All(*this, msg, c);
-		}
-	}
-}
+// void Server::sendNickMsg2Mem(std::string msg, Client c){
+// 	for (unsigned int i = 0; i < channels.size(); i++){
+// 		if (channels[i].isMember(c)){
+// 			channels[i].sendNickMsg2All(*this, msg, c);
+// 		}
+// 	}
+// }
 
 void Server::removeChannel(std::string chName){
 	for (unsigned int i = 0; i < this->channels.size(); i++){
@@ -395,7 +396,7 @@ void Server::removeChannel(std::string chName){
     }
 }
 
-bool	Server::msgAlreadyRecieved(std::string nick){//MM new
+bool	Server::msgAlreadyRecieved(std::string nick){
 	for (unsigned int i = 0; i < nickMsgRecievers.size(); i++){
 		if (nickMsgRecievers[i] == nick)
 			return true;
