@@ -6,7 +6,7 @@
 /*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/30 15:39:46 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/05/14 18:21:48 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/05/15 14:03:25 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void    Server::nickCommand(std::string &args, Client &c){
     if (isInUseNickname(param)){// check this only if new client 
         sendMsg(c.getClientFD(), ERR_NICKNAMEINUSE(c.getNickname()));
         return ;}
-    if (c.isRegistered()){
+    if (c.isRegistered()){//M modified  block
         std::string msg = ":" + c.getNickname() + "!~" + c.getUsername() + "@" + " NICK :" + param + "\n";
         sendMsg(c.getClientFD(), msg);
         nickMsgRecievers.push_back(c.getNickname());

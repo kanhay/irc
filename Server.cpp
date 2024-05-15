@@ -181,7 +181,7 @@ void	Server::acceptClient(){
 
 
 
-void	Server::recieve_data(int fd){
+void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	char		buffer[1024];
 	std::string	str;
 	size_t		i;
@@ -237,7 +237,7 @@ void	Server::recieve_data(int fd){
 						this->args = '\0';
 					}
 					new_buf = new_buf.substr(fond+1, new_buf.size());
-					checkCommands(fd);
+					checkCommands(fd);//M
 					command.clear();
 					args.clear();
 				}
@@ -356,9 +356,11 @@ Channel		&Server::findChannel(std::string chname){
 void	Server::clearClientslist(){
 	clients.clear();
 }
+
 void	Server::clearChannelslist(){
 	channels.clear();
 }
+
 /* // Convert std::string to const char*
     if (!base.is_open())
         throw std::runtime_error("Can not open the sayings data base\n");
@@ -379,7 +381,7 @@ void	Server::fillSayingsBox(std::string fileName){
 }
 
 
-// void Server::sendNickMsg2Mem(std::string msg, Client c){
+// void Server::sendNickMsg2Mem(std::string msg, Client &c){
 // 	for (unsigned int i = 0; i < channels.size(); i++){
 // 		if (channels[i].isMember(c)){
 // 			channels[i].sendNickMsg2All(*this, msg, c);
@@ -396,7 +398,7 @@ void Server::removeChannel(std::string chName){
     }
 }
 
-bool	Server::msgAlreadyRecieved(std::string nick){
+bool	Server::msgAlreadyRecieved(std::string nick){//MM new
 	for (unsigned int i = 0; i < nickMsgRecievers.size(); i++){
 		if (nickMsgRecievers[i] == nick)
 			return true;
