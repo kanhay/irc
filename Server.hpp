@@ -63,7 +63,7 @@ class	Server{
 
 
 	public:
-		std::vector<std::string> nickMsgRecievers;//MM
+		std::vector<std::string> nickMsgRecievers;
 		Server();
 		~Server();//close users fds before quitting
 		//--Setters--//

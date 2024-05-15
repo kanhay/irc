@@ -159,16 +159,16 @@ void Channel::sendMsg2Members(Server &s, Client &c){
 }
 
 //AZMARA
-void	Channel::sendmsg2chanRegulars(Server S, Client cli, std::string message, Channel ch){
+void	Channel::sendmsg2chanRegulars(Server s, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->regularUsers.size(); ++i){
-		S.sendMsg(regularUsers[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
-		S.sendMsg(regularUsers[i].getClientFD(), "\n");
+        if (cli.getNickname() != this->regularUsers[i].getNickname())
+		    s.sendMsg(regularUsers[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
 	}
 }
-void	Channel::sendmsg2chanOperators(Server S, Client cli, std::string message, Channel ch){
+void	Channel::sendmsg2chanOperators(Server s, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->operators.size(); ++i){
-		S.sendMsg(operators[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
-		S.sendMsg(operators[i].getClientFD(), "\n");
+        if (cli.getNickname() != this->operators[i].getNickname())
+		    s.sendMsg(operators[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
 	}
 }
 
@@ -269,7 +269,7 @@ std::string Channel::channelModes(){
     return (str);
 }
 
-void	Channel::updateAmemNickName(Client c, std::string newNick){
+void	Channel::updateAmemNickName(Client &c, std::string newNick){
     for (unsigned int i = 0; i < this->operators.size(); i++){
         if (toLowerCase(this->operators[i].getNickname()) == toLowerCase(c.getNickname())){
             this->operators[i].setNickname(newNick);
