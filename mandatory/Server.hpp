@@ -20,7 +20,6 @@
 #include <fstream>
 #include <cctype>
 #include "responses.hpp"
-#include <ctime>
 
 class Client;
 class Channel;
@@ -35,7 +34,6 @@ class	Server{
 		std::string 										command;
 		std::string 										args;
 		std::vector<struct pollfd>							fds;
-		std::vector<std::string>							sayingsBox;
 		std::vector<Client>									clients;
 		std::vector<Channel>								channels;
 		std::string											target;
@@ -64,6 +62,8 @@ class	Server{
 		int			getServerFD();
 		std::string	getPassword();
 		std::string getCommand();
+		std::string getTopic() const;
+		std::string getChannelTopic() const;
 
 		void		setPort(int n);
 		void		setPassword(char *str);
@@ -86,13 +86,11 @@ class	Server{
 		Client		&findClient(std::string nn);
 		Channel		&findChannel(std::string chname);
 
-		void		fillSayingsBox(std::string fileName);
         void		nickCommand(std::string &args, Client &c);
         void		userCommand(std::string &args, Client &c);
         void		passCommand(std::string &args, Client &c);
         void		inviteCommand(std::string &args, Client &c);
         void		modeCommand(std::string &args, Client &c);
-        void		botCommand(Client &c);
 
 
 		void		checkCommands(int fd);
