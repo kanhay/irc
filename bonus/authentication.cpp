@@ -1,4 +1,5 @@
 
+
 #include "Server.hpp"
 
 bool Server::isValidNickName(std::string nickname){
@@ -15,7 +16,7 @@ bool Server::isValidNickName(std::string nickname){
         if (isdigit(nickname[0]))
             return false;
     }
-    else
+    else if (nickname.empty() || nickname[0] == '\0')
         return(false);
     return true;
 }
@@ -32,11 +33,11 @@ void    Server::nickCommand(std::string &args, Client &c){
         getline(ss, param);
         param = param.substr(1);
     }
-    if (c.getNickname() == param)
-        return;
-    if (!isValidNickName(param)){
+    if (ss.fail() || !isValidNickName(param)){
         sendMsg(c.getClientFD(), ERR_ERRONEUSNICKNAME(c.getNickname()));
         return;}
+    if (c.getNickname() == param)
+        return;
     for (unsigned int i = 0;  i < clients.size(); i++){
         if ((tolowercase(clients[i].getNickname()) == tolowercase(param)) && !clients[i].isRegistered())
             clients[i].setNickname("");
@@ -71,7 +72,7 @@ void    Server::userCommand(std::string &args, Client &c){
     std::istringstream iss(args);
     std::string un, hn, sn, rn;
     iss >> un >> hn >> sn;
-    if (hn[0] == ':' || sn[0] == ':'){
+    if (iss.fail() || hn[0] == ':' || sn[0] == ':'){
         sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), "USER"));
         if (c.isRegistered())
 			handleError(c);
@@ -124,7 +125,7 @@ void    Server::passCommand(std::string &args, Client &c){
             getline(ss, param);
             param = param.substr(1);
         }
-        if (param != getPassword()){
+        if (ss.fail() || param != getPassword()){
             sendMsg(c.getClientFD(), ERR_PASSWDMISMATCH(c.getNickname()));
             return;
         }
