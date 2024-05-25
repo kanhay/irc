@@ -161,4 +161,6 @@ void    Client::invite2channel(std::string chName){
         invited2channels.push_back(chName);
 }
 
-
+void Client::clearNick(){
+    this->nickname.clear();
+}

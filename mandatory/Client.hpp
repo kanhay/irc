@@ -14,7 +14,6 @@ class	Client{
         int			             clientFD;
 		std::string	             clientIP;
 		std::string	             buffer;
-        std::string              nickname;
         std::string              username;
         std::string              hostname;
         std::string              servername;
@@ -22,6 +21,7 @@ class	Client{
         bool                     registered;
         bool                     PasswordSended;
         std::vector<std::string> invited2channels;
+        std::string              nickname;
 
 	public:
         Client();
@@ -59,6 +59,7 @@ class	Client{
         void            removeInvitedCh(std::string ChannelName);
 
         void clearBuffer();
+        void clearNick();//M
 
 };
 

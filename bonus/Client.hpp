@@ -59,6 +59,7 @@ class	Client{
         void            removeInvitedCh(std::string ChannelName);
 
         void clearBuffer();
+        void clearNick();
 
 };
 
