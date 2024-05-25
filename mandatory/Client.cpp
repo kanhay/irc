@@ -1,7 +1,8 @@
 #include "Client.hpp"
 
 Client::Client(){
-    PasswordSended = registered = false;
+    PasswordSended = false;
+    registered = false;
     clientFD = -1;
 }
 
@@ -159,8 +160,4 @@ void Client::removeInvitedCh(std::string ChannelName){
 void    Client::invite2channel(std::string chName){
     if (!isInUseInvitedCh(chName))
         invited2channels.push_back(chName);
-}
-
-void Client::clearNick(){
-    this->nickname.clear();
 }

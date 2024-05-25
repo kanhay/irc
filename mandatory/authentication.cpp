@@ -40,7 +40,7 @@ void    Server::nickCommand(std::string &args, Client &c){
         return;
     for (unsigned int i = 0;  i < clients.size(); i++){
         if ((tolowercase(clients[i].getNickname()) == tolowercase(param)) && !clients[i].isRegistered())
-            clients[i].clearNick();
+            clients[i].setNickname("");
     }
     if (isInUseNickname(param)){
         sendMsg(c.getClientFD(), ERR_NICKNAMEINUSE(c.getNickname()));
@@ -106,7 +106,8 @@ void    Server::userCommand(std::string &args, Client &c){
 }
 
 void    Server::passCommand(std::string &args, Client &c){
-    c.clearAuthentication();
+    if (!c.isRegistered())
+        c.clearAuthentication();
     if (c.isRegistered()){
         sendMsg(c.getClientFD(), ERR_ALREADYREGISTERED(c.getNickname()));
         return ;}
