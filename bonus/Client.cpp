@@ -163,6 +163,3 @@ void    Client::invite2channel(std::string chName){
 }
 
 
-void Client::clearNick(){
-    nickname.clear();
-}

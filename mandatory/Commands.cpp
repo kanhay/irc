@@ -30,7 +30,7 @@ void Server::handleError(Client &c){
 	else if (this->command == "KICK")
 		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<channel> <nick>[,<nick>]+ [:<reason>]"));
     else if(this->command == "PRIVMSG")
-		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<target>[,<target>]+ :<message>"));
+		sendMsg(c.getClientFD(), ERR_USAGE(c.getNickname(), this->command, "<target>[,<target>]+ :<message>")); 
 }
 
 void	Server::handleCommands(Client &c){
@@ -67,7 +67,6 @@ void	Server::handleCommands(Client &c){
 		else if (this->command == "PRIVMSG")
 			privmsgCommand(args, c);
 	}
-	std::cout << "nick name is>>" << c.getNickname() << "\n";
 }
 
 void Server::checkCommands(int fd){

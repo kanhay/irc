@@ -17,7 +17,7 @@ void    Server::modeCommand(std::string &args, Client &c){
             sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(args.substr(0, args.find_first_of(" ")), c.getNickname()));
             return ;}
         ss >> chan;}
-    if (ss.fail() || !isInUseChName(chan)){
+    if (!isInUseChName(chan)){
         sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(chan, c.getNickname()));
         return ;
     }
@@ -36,7 +36,7 @@ void    Server::modeCommand(std::string &args, Client &c){
         while (ss >> modestring){
             ss >>std::ws;
             for (unsigned i = 0; i < modestring.size(); i++){
-                if (ss.fail() || modes.find(modestring[i]) == std::string::npos)
+                if (modes.find(modestring[i]) == std::string::npos)
                     sendMsg(c.getClientFD(), ERR_UNKNOWNMODE(c.getNickname(), chan, modestring[i]));
                 else if (!channel.isOperator(c)){
                     std::string m = "";
@@ -51,7 +51,7 @@ void    Server::modeCommand(std::string &args, Client &c){
                         key = key.substr(1, (key.find_first_of(" ") - 1));}
                     else
                         ss >> key;
-                    if (!ss.fail() && !key.empty()){
+                    if (!key.empty()){
                         if (sign[0] == '+'){
                             if (channel.getHasKey()){
                                 key.clear();
@@ -145,7 +145,7 @@ void    Server::modeCommand(std::string &args, Client &c){
                         user = user.substr(1);}
                     else
                         ss >> user;
-                    if (!ss.fail() && !user.empty()){
+                    if (!user.empty()){
                         if (!isInUseNickname(user))
                             sendMsg(c.getClientFD(), ERR_NOSUCHNICK(c.getNickname(), user));
                         else if (channel.isMember(findClient(user))){
@@ -178,7 +178,7 @@ void    Server::modeCommand(std::string &args, Client &c){
         getline (ss, modestring);
         modestring = modestring.substr(1);
         for (unsigned int i = 0; i < modestring.size(); i++){
-            if (ss.fail() || modes.find(modestring[i]) == std::string::npos){
+            if (modes.find(modestring[i]) == std::string::npos){
                 sendMsg(c.getClientFD(), ERR_UNKNOWNMODE(c.getNickname(), chan, modestring[i]));
                 continue;
             }

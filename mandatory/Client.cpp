@@ -1,8 +1,7 @@
 #include "Client.hpp"
 
 Client::Client(){
-    PasswordSended = false;
-    registered = false;
+    PasswordSended = registered = false;
     clientFD = -1;
 }
 
@@ -161,3 +160,5 @@ void    Client::invite2channel(std::string chName){
     if (!isInUseInvitedCh(chName))
         invited2channels.push_back(chName);
 }
+
+

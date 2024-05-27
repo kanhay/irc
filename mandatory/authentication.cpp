@@ -1,5 +1,3 @@
-
-
 #include "Server.hpp"
 
 bool Server::isValidNickName(std::string nickname){
